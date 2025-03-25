@@ -10,7 +10,7 @@ import java.time.Instant;
  */
 @Data
 public class Film {
-    public int id;
+    public Integer id;
     private String name;
     private String description;
     public Instant releaseDate;
