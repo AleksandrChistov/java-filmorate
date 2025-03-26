@@ -7,7 +7,6 @@ import ru.yandex.practicum.filmorate.excepton.NotFoundException;
 import ru.yandex.practicum.filmorate.excepton.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
-import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -15,9 +14,10 @@ import java.util.Map;
 import static ru.yandex.practicum.filmorate.util.CommonUtil.getNextId;
 
 @RestController
-@RequestMapping("/users")
+@RequestMapping(UserController.URL)
 @Slf4j
 public class UserController {
+    public static final String URL = "/users";
     private final Map<Integer, User> users = new HashMap<>();
 
     @GetMapping
@@ -29,7 +29,6 @@ public class UserController {
     public User create(@Valid @RequestBody User newUser) {
         try {
             log.info("Добавление нового пользователя");
-            validate(newUser);
             log.debug("Пользователь прошёл валидацию: {}", newUser);
             setLoginIfNameIsBlank(newUser);
             newUser.setId(getNextId(users));
@@ -50,7 +49,6 @@ public class UserController {
     public User update(@Valid @RequestBody User newUser) {
         try {
             log.info("Обновление пользователя с id = {}", newUser.getId());
-            validate(newUser);
             if (newUser.getId() == null) {
                 throw new ValidationException("id должно быть заполнено");
             }
@@ -75,18 +73,6 @@ public class UserController {
         } catch (Exception e) {
             log.error("Непредвиденная ошибка при обновлении пользователя: {}", e.getMessage(), e);
             throw new RuntimeException("Ошибка при обновлении пользователя");
-        }
-    }
-
-    private void validate(User newUser) {
-        if (newUser.getEmail() == null || !newUser.getEmail().contains("@")) {
-            throw new ValidationException("Email должен содержать @");
-        }
-        if (newUser.getLogin() == null || newUser.getLogin().isBlank()) {
-            throw new ValidationException("Логин не может быть пустым");
-        }
-        if (newUser.getBirthday() == null || newUser.getBirthday().isAfter(LocalDate.now())) {
-            throw new ValidationException("Дата рождения не может быть пустой или в будущем");
         }
     }
 

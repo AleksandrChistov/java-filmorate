@@ -15,9 +15,10 @@ import java.util.Map;
 import static ru.yandex.practicum.filmorate.util.CommonUtil.getNextId;
 
 @RestController
-@RequestMapping("/films")
+@RequestMapping(FilmController.URL)
 @Slf4j
 public class FilmController {
+    public static final String URL = "/films";
     public static final LocalDate MIN_RELEASE_DATE = LocalDate.of(1895, 12, 28);
     private final Map<Integer, Film> films = new HashMap<>();
 
@@ -30,8 +31,6 @@ public class FilmController {
     public Film create(@Valid @RequestBody Film newFilm) {
         try {
             log.info("Добавление нового фильма с названием = {}", newFilm.getName());
-            validate(newFilm);
-            log.debug("Фильм прошёл валидацию: {}", newFilm);
             newFilm.setId(getNextId(films));
             log.debug("Фильму был присвоен id = {}", newFilm.getId());
             films.put(newFilm.getId(), newFilm);
@@ -50,11 +49,10 @@ public class FilmController {
     public Film update(@Valid @RequestBody Film newFilm) {
         try {
             log.info("Обновление фильма с id = {}", newFilm.getId());
-            validate(newFilm);
             if (newFilm.getId() == null) {
                 throw new ValidationException("id должно быть заполнено");
             }
-            log.debug("Фильм для обновления прошёл валидацию: {}", newFilm);
+            log.debug("id фильма: {}", newFilm.getId());
             if (films.containsKey(newFilm.getId())) {
                 Film oldFilm = films.get(newFilm.getId());
                 oldFilm.setName(newFilm.getName());
@@ -74,21 +72,6 @@ public class FilmController {
         }  catch (Exception e) {
             log.error("Непредвиденная ошибка при обновлении фильма: {}", e.getMessage(), e);
             throw new RuntimeException("Ошибка при обновлении фильма");
-        }
-    }
-
-    private void validate(Film newFilm) {
-        if (newFilm.getName() == null || newFilm.getName().isBlank()) {
-            throw new ValidationException("Название фильмы не может быть пустым");
-        }
-        if (newFilm.getDescription() == null || newFilm.getDescription().isBlank() || newFilm.getDescription().length() > 200) {
-            throw new ValidationException("Описание не может быть пустым или больше 200 символов");
-        }
-        if (newFilm.getReleaseDate() == null || newFilm.getReleaseDate().isBefore(MIN_RELEASE_DATE)) {
-            throw new ValidationException("Дата релиза не может быть пустой или раньше 28 декабря 1895 года");
-        }
-        if (newFilm.getDuration() == null || newFilm.getDuration() < 0) {
-            throw new ValidationException("Продолжительность фильма не может быть пустым или меньше 0");
         }
     }
 
