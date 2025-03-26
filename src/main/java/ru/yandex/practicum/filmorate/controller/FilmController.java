@@ -6,7 +6,7 @@ import ru.yandex.practicum.filmorate.excepton.NotFoundException;
 import ru.yandex.practicum.filmorate.excepton.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.time.Instant;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,8 +17,8 @@ import static ru.yandex.practicum.filmorate.util.CommonUtil.getNextId;
 @RequestMapping("/films")
 @Slf4j
 public class FilmController {
+    public static final LocalDate MIN_RELEASE_DATE = LocalDate.of(1895, 12, 28);
     private final Map<Integer, Film> films = new HashMap<>();
-    private static final Instant MAX_RELEASE_DATE = Instant.parse("1895-12-28T00:00:00.00Z");
 
     @GetMapping
     public Collection<Film> findAll() {
@@ -83,10 +83,10 @@ public class FilmController {
         if (newFilm.getDescription() == null || newFilm.getDescription().isBlank() || newFilm.getDescription().length() > 200) {
             throw new ValidationException("Описание не может быть пустым или больше 200 символов");
         }
-        if (newFilm.getReleaseDate() == null || newFilm.getReleaseDate().isBefore(MAX_RELEASE_DATE)) {
+        if (newFilm.getReleaseDate() == null || newFilm.getReleaseDate().isBefore(MIN_RELEASE_DATE)) {
             throw new ValidationException("Дата релиза не может быть пустой или раньше 28 декабря 1895 года");
         }
-        if (newFilm.getDuration() == null || newFilm.getDuration().isNegative()) {
+        if (newFilm.getDuration() == null || newFilm.getDuration() < 0) {
             throw new ValidationException("Продолжительность фильма не может быть пустым или меньше 0");
         }
     }

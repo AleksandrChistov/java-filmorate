@@ -30,6 +30,7 @@ public class UserController {
             log.info("Добавление нового пользователя");
             validate(newUser);
             log.debug("Пользователь прошёл валидацию: {}", newUser);
+            setLoginIfNameIsBlank(newUser);
             newUser.setId(getNextId(users));
             log.debug("Пользователю был присвоен id = {}", newUser.getId());
             users.put(newUser.getId(), newUser);
@@ -53,6 +54,7 @@ public class UserController {
                 throw new ValidationException("id должно быть заполнено");
             }
             log.debug("Пользователь для обновления прошёл валидацию: {}", newUser);
+            setLoginIfNameIsBlank(newUser);
             if (users.containsKey(newUser.getId())) {
                 User oldUser = users.get(newUser.getId());
                 oldUser.setName(newUser.getName());
@@ -84,6 +86,13 @@ public class UserController {
         }
         if (newUser.getBirthday() == null || newUser.getBirthday().isAfter(LocalDate.now())) {
             throw new ValidationException("Дата рождения не может быть пустой или в будущем");
+        }
+    }
+
+    private static void setLoginIfNameIsBlank(User newUser) {
+        if (newUser.getName() == null || newUser.getName().isBlank()) {
+            newUser.setName(newUser.getLogin());
+            log.debug("Имя пользователя не заполнено, поэтому был присвоен логин вместо имени = {}", newUser.getName());
         }
     }
 
