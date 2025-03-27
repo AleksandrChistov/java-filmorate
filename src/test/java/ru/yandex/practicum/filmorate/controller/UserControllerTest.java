@@ -10,7 +10,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import ru.yandex.practicum.filmorate.excepton.NotFoundException;
-import ru.yandex.practicum.filmorate.excepton.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.time.LocalDate;
@@ -138,7 +137,7 @@ class UserControllerTest {
                         .content(objectMapper.writeValueAsString(userWithNullId)))
                 .andExpect(status().isBadRequest())
                 .andExpect(result ->
-                        assertInstanceOf(ValidationException.class, result.getResolvedException(), "Тип ошибки не совпадает при id = NULL"));
+                        assertInstanceOf(MethodArgumentNotValidException.class, result.getResolvedException(), "Тип ошибки не совпадает при id = NULL"));
 
         mockMvc.perform(MockMvcRequestBuilders.put(UserController.URL)
                         .contentType(MediaType.APPLICATION_JSON)

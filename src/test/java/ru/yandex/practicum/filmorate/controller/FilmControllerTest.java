@@ -10,13 +10,13 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import ru.yandex.practicum.filmorate.excepton.NotFoundException;
-import ru.yandex.practicum.filmorate.excepton.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.time.LocalDate;
 
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static ru.yandex.practicum.filmorate.validation.ReleaseDateValidator.MIN_RELEASE_DATE;
 
 @SpringBootTest
 @AutoConfigureMockMvc
@@ -79,7 +79,7 @@ class FilmControllerTest {
     @Test
     void createWithReleaseDateValidationException() throws Exception {
         Film filmWithNullReleaseDate = new Film(null, "Film name", "Film description", null, 60);
-        Film filmWithReleaseDateBeforeMinDate = new Film(null, "Film name", "Film description", FilmController.MIN_RELEASE_DATE.minusDays(1), 60);
+        Film filmWithReleaseDateBeforeMinDate = new Film(null, "Film name", "Film description", MIN_RELEASE_DATE.minusDays(1), 60);
 
         mockMvc.perform(MockMvcRequestBuilders.post(FilmController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -126,7 +126,7 @@ class FilmControllerTest {
                         .content(objectMapper.writeValueAsString(filmWithNullId)))
                 .andExpect(status().isBadRequest())
                 .andExpect(result ->
-                        assertInstanceOf(ValidationException.class, result.getResolvedException(), "Тип ошибки не совпадает при id = NULL"));
+                        assertInstanceOf(MethodArgumentNotValidException.class, result.getResolvedException(), "Тип ошибки не совпадает при id = NULL"));
 
         mockMvc.perform(MockMvcRequestBuilders.put(FilmController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -188,7 +188,7 @@ class FilmControllerTest {
     @Test
     void updateWithReleaseDateValidationException() throws Exception {
         Film filmWithNullReleaseDate = new Film(null, "Film name", "Film description", null, 60);
-        Film filmWithReleaseDateBeforeMinDate = new Film(null, "Film name", "Film description", FilmController.MIN_RELEASE_DATE.minusDays(1), 60);
+        Film filmWithReleaseDateBeforeMinDate = new Film(null, "Film name", "Film description", MIN_RELEASE_DATE.minusDays(1), 60);
 
         mockMvc.perform(MockMvcRequestBuilders.put(FilmController.URL)
                         .contentType(MediaType.APPLICATION_JSON)

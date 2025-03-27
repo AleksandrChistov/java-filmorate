@@ -1,11 +1,9 @@
 package ru.yandex.practicum.filmorate.model;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.PositiveOrZero;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import ru.yandex.practicum.filmorate.validation.Group;
 import ru.yandex.practicum.filmorate.validation.ReleaseDate;
 
 import java.time.LocalDate;
@@ -16,15 +14,16 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 public class Film {
+    @NotNull(groups = Group.OnUpdate.class)
     public Integer id;
-    @NotBlank
+    @NotBlank(groups = {Group.OnCreate.class, Group.OnUpdate.class})
     private String name;
-    @NotBlank
-    @Size(max = 200)
+    @NotBlank(groups = {Group.OnCreate.class, Group.OnUpdate.class})
+    @Size(max = 200, groups = {Group.OnCreate.class, Group.OnUpdate.class})
     private String description;
-    @ReleaseDate
+    @ReleaseDate(groups = {Group.OnCreate.class, Group.OnUpdate.class})
     public LocalDate releaseDate;
-    @NotNull
-    @PositiveOrZero
+    @NotNull(groups = {Group.OnCreate.class, Group.OnUpdate.class})
+    @Positive(groups = {Group.OnCreate.class, Group.OnUpdate.class})
     public Integer duration;
 }
