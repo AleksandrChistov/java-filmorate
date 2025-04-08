@@ -44,22 +44,27 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public void addFriend(int userId, int friendId) {
+        log.info("Добавление в друзья друг другу пользователей {} и {}", friendId, userId);
         Set<Integer> userFriends = getFriendsIdsByUserId(userId);
         Set<Integer> friendFriends = getFriendsIdsByUserId(friendId);
         userFriends.add(friendId);
         friendFriends.add(userId);
+        log.info("Пользователи были успешно добавлены в друзья");
     }
 
     @Override
     public void deleteFriend(int userId, int friendId) {
+        log.info("Удаление из друзей друг друга пользователей {} и {}", friendId, userId);
         Set<Integer> userFriends = getFriendsIdsByUserId(userId);
         Set<Integer> friendFriends = getFriendsIdsByUserId(friendId);
         userFriends.remove(friendId);
         friendFriends.remove(userId);
+        log.info("Пользователи были успешно удалены из друзей");
     }
 
     @Override
     public List<User> getCommonFriends(int userId, int otherId) {
+        log.info("Получение общих друзей пользователей {} и {}", userId, otherId);
         Set<Integer> userFriends = getFriendsIdsByUserId(userId);
         Set<Integer> otherFriends = getFriendsIdsByUserId(otherId);
         return userFriends.stream()
@@ -80,6 +85,7 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public List<User> getFriends(int id) {
+        log.info("Получение всех друзей пользователя {}", id);
         return getFriendsIdsByUserId(id).stream()
                 .map(users::get)
                 .filter(Objects::nonNull)

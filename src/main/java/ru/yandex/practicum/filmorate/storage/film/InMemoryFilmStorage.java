@@ -57,18 +57,23 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     @Override
     public void addLike(int filmId, int userId) {
+        log.info("Добавление лайка пользователем {} к фильму {}", userId, filmId);
         Set<Integer> likes = getLikesByFilmId(filmId);
         likes.add(userId);
+        log.info("Лайк успешно добавлен");
     }
 
     @Override
     public void deleteLike(int filmId, int userId) {
+        log.info("Удаление лайка пользователем {} из фильма {}", userId, filmId);
         Set<Integer> likes = getLikesByFilmId(filmId);
         likes.remove(userId);
+        log.info("Лайк успешно удален");
     }
 
     @Override
     public List<Film> getPopularFilmsByCount(int count) {
+        log.info("Получение списка популярных фильмов в количестве {}", count);
         return films.values().stream()
                 .sorted(Comparator.comparingInt((Film f) -> f.getLikes().size()).reversed())
                 .limit(count)
