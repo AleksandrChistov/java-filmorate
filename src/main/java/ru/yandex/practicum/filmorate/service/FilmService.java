@@ -16,6 +16,10 @@ public class FilmService {
         return filmStorage.getAll();
     }
 
+    public Film getById(int id) {
+        return filmStorage.getById(id);
+    }
+
     public Film create(Film newFilm) {
         return filmStorage.add(newFilm);
     }
@@ -36,7 +40,7 @@ public class FilmService {
         filmStorage.deleteLike(filmId, userId);
     }
 
-    public List<Film> getTop10Films() {
-        return filmStorage.getTop10Films();
+    public List<Film> getPopularFilmsByCount(int count) {
+        return filmStorage.getPopularFilmsByCount(count);
     }
 }

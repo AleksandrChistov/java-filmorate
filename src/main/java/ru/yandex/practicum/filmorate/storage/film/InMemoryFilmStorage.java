@@ -51,6 +51,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public Film getById(int id) {
+        return films.get(id);
+    }
+
+    @Override
     public void addLike(int filmId, int userId) {
         Set<Integer> likes = getLikesByFilmId(filmId);
         likes.add(userId);
@@ -63,10 +68,10 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public List<Film> getTop10Films() {
+    public List<Film> getPopularFilmsByCount(int count) {
         return films.values().stream()
                 .sorted(Comparator.comparingInt((Film f) -> f.getLikes().size()).reversed())
-                .limit(10)
+                .limit(count)
                 .collect(Collectors.toList());
     }
 
