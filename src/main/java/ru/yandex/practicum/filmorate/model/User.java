@@ -26,5 +26,5 @@ public class User {
     @NotNull(groups = {Group.OnCreate.class, Group.OnUpdate.class})
     @Past(groups = {Group.OnCreate.class, Group.OnUpdate.class})
     private LocalDate birthday;
-    private final Set<Integer> friends = new HashSet<>();
+    private final Set<Integer> friendsIds = new HashSet<>();
 }

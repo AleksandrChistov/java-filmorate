@@ -44,24 +44,24 @@ public class InMemoryUserStorage implements UserStorage {
 
     @Override
     public void addFriend(int userId, int friendId) {
-        Set<Integer> userFriends = getFriendsByUserId(userId);
-        Set<Integer> friendFriends = getFriendsByUserId(friendId);
+        Set<Integer> userFriends = getFriendsIdsByUserId(userId);
+        Set<Integer> friendFriends = getFriendsIdsByUserId(friendId);
         userFriends.add(friendId);
         friendFriends.add(userId);
     }
 
     @Override
     public void deleteFriend(int userId, int friendId) {
-        Set<Integer> userFriends = getFriendsByUserId(userId);
-        Set<Integer> friendFriends = getFriendsByUserId(friendId);
+        Set<Integer> userFriends = getFriendsIdsByUserId(userId);
+        Set<Integer> friendFriends = getFriendsIdsByUserId(friendId);
         userFriends.remove(friendId);
         friendFriends.remove(userId);
     }
 
     @Override
     public List<User> getCommonFriends(int userId, int otherId) {
-        Set<Integer> userFriends = getFriendsByUserId(userId);
-        Set<Integer> otherFriends = getFriendsByUserId(otherId);
+        Set<Integer> userFriends = getFriendsIdsByUserId(userId);
+        Set<Integer> otherFriends = getFriendsIdsByUserId(otherId);
         return userFriends.stream()
                 .map(users::get)
                 .filter(f -> f != null && otherFriends.contains(f.getId()))
@@ -73,11 +73,24 @@ public class InMemoryUserStorage implements UserStorage {
         return new ArrayList<>(users.values());
     }
 
-    private Set<Integer> getFriendsByUserId(int userId) {
+    @Override
+    public User getById(int id) {
+        return users.get(id);
+    }
+
+    @Override
+    public List<User> getFriends(int id) {
+        return getFriendsIdsByUserId(id).stream()
+                .map(users::get)
+                .filter(Objects::nonNull)
+                .toList();
+    }
+
+    private Set<Integer> getFriendsIdsByUserId(int userId) {
         User found = users.get(userId);
         if (found == null) {
             throw new NotFoundException("Пользователя с id = " + userId + " не найден.");
         }
-        return found.getFriends();
+        return found.getFriendsIds();
     }
 }

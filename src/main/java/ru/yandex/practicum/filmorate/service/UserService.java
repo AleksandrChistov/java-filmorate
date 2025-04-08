@@ -18,6 +18,14 @@ public class UserService {
         return userStorage.getAll();
     }
 
+    public User getById(int id) {
+        return userStorage.getById(id);
+    }
+
+    public List<User> getFriends(int id) {
+        return userStorage.getFriends(id);
+    }
+
     public User create(User newUser) {
         log.info("Добавление нового пользователя");
         setLoginIfNameIsBlank(newUser);
