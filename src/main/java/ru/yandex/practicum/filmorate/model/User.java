@@ -9,6 +9,8 @@ import lombok.Data;
 import ru.yandex.practicum.filmorate.validation.Group;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -24,4 +26,5 @@ public class User {
     @NotNull(groups = {Group.OnCreate.class, Group.OnUpdate.class})
     @Past(groups = {Group.OnCreate.class, Group.OnUpdate.class})
     private LocalDate birthday;
+    private final Set<Integer> friends = new HashSet<>();
 }
