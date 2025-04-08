@@ -7,6 +7,8 @@ import ru.yandex.practicum.filmorate.validation.Group;
 import ru.yandex.practicum.filmorate.validation.ReleaseDate;
 
 import java.time.LocalDate;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Film.
@@ -26,4 +28,5 @@ public class Film {
     @NotNull(groups = {Group.OnCreate.class, Group.OnUpdate.class})
     @Positive(groups = {Group.OnCreate.class, Group.OnUpdate.class})
     public Integer duration;
+    private final Set<Integer> likes = new HashSet<>();
 }
