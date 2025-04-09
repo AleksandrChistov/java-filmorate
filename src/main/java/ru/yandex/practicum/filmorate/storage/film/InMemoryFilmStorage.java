@@ -59,18 +59,16 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void addLike(int filmId, int userId) {
-        log.info("Добавление лайка пользователем {} к фильму {}", userId, filmId);
-        Film foundFilm = findFilm(filmId);
-        foundFilm.addLike(userId);
+    public void addLike(Film film, int userId) {
+        log.info("Добавление лайка пользователем {} к фильму {}", userId, film.getId());
+        film.addLike(userId);
         log.info("Лайк успешно добавлен");
     }
 
     @Override
-    public void deleteLike(int filmId, int userId) {
-        log.info("Удаление лайка пользователем {} из фильма {}", userId, filmId);
-        Film foundFilm = findFilm(filmId);
-        foundFilm.removeLike(userId);
+    public void deleteLike(Film film, int userId) {
+        log.info("Удаление лайка пользователем {} из фильма {}", userId, film.getId());
+        film.removeLike(userId);
         log.info("Лайк успешно удален");
     }
 
@@ -81,13 +79,5 @@ public class InMemoryFilmStorage implements FilmStorage {
                 .sorted(Comparator.comparingInt(Film::getLikesCount).reversed())
                 .limit(count)
                 .collect(Collectors.toList());
-    }
-
-    private Film findFilm(int filmId) {
-        Film foundFilm = films.get(filmId);
-        if (foundFilm == null) {
-            throw new NotFoundException("Фильма с id = " + filmId + " не найден.");
-        }
-        return foundFilm;
     }
 }
