@@ -5,7 +5,6 @@ import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.excepton.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.util.List;
 
@@ -13,7 +12,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FilmService {
     private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
+    private final UserService userService;
 
     public List<Film> getAll() {
         return filmStorage.getAll();
@@ -60,6 +59,6 @@ public class FilmService {
     }
 
     private void checkUserIsPresent(int userId) {
-        userStorage.getById(userId);
+        userService.getById(userId);
     }
 }

@@ -20,7 +20,7 @@ public class UserService {
     }
 
     public User getById(int id) {
-        return userStorage.getById(id);
+        return findUser(id);
     }
 
     public List<User> getFriends(int id) {
