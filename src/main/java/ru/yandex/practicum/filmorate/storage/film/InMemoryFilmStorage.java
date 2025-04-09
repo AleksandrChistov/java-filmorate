@@ -61,16 +61,16 @@ public class InMemoryFilmStorage implements FilmStorage {
     @Override
     public void addLike(int filmId, int userId) {
         log.info("Добавление лайка пользователем {} к фильму {}", userId, filmId);
-        Set<Integer> likes = getLikesByFilmId(filmId);
-        likes.add(userId);
+        Film foundFilm = findFilm(filmId);
+        foundFilm.addLike(userId);
         log.info("Лайк успешно добавлен");
     }
 
     @Override
     public void deleteLike(int filmId, int userId) {
         log.info("Удаление лайка пользователем {} из фильма {}", userId, filmId);
-        Set<Integer> likes = getLikesByFilmId(filmId);
-        likes.remove(userId);
+        Film foundFilm = findFilm(filmId);
+        foundFilm.removeLike(userId);
         log.info("Лайк успешно удален");
     }
 
@@ -78,16 +78,16 @@ public class InMemoryFilmStorage implements FilmStorage {
     public List<Film> getPopularFilmsByCount(int count) {
         log.info("Получение списка популярных фильмов в количестве {}", count);
         return films.values().stream()
-                .sorted(Comparator.comparingInt((Film f) -> f.getLikes().size()).reversed())
+                .sorted(Comparator.comparingInt(Film::getLikesCount).reversed())
                 .limit(count)
                 .collect(Collectors.toList());
     }
 
-    private Set<Integer> getLikesByFilmId(int filmId) {
+    private Film findFilm(int filmId) {
         Film foundFilm = films.get(filmId);
         if (foundFilm == null) {
             throw new NotFoundException("Фильма с id = " + filmId + " не найден.");
         }
-        return foundFilm.getLikes();
+        return foundFilm;
     }
 }
