@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.excepton.NotFoundException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -23,7 +24,8 @@ public class UserService {
     }
 
     public List<User> getFriends(int id) {
-        return userStorage.getFriends(id);
+        User user = findUser(id);
+        return userStorage.getFriends(user);
     }
 
     public User create(User newUser) {
@@ -43,15 +45,21 @@ public class UserService {
     }
 
     public void addFriend(int userId, int friendId) {
-        userStorage.addFriend(userId, friendId);
+        User user = findUser(userId);
+        User friend = findUser(friendId);
+        userStorage.addFriend(user, friend);
     }
 
     public void deleteFriend(int userId, int friendId) {
-        userStorage.deleteFriend(userId, friendId);
+        User user = findUser(userId);
+        User friend = findUser(friendId);
+        userStorage.deleteFriend(user, friend);
     }
 
     public List<User> getCommonFriends(int userId, int otherId) {
-        return userStorage.getCommonFriends(userId, otherId);
+        User user = findUser(userId);
+        User other = findUser(otherId);
+        return userStorage.getCommonFriends(user, other);
     }
 
     private static void setLoginIfNameIsBlank(User newUser) {
@@ -59,5 +67,13 @@ public class UserService {
             newUser.setName(newUser.getLogin());
             log.debug("Имя пользователя не заполнено, поэтому был присвоен логин вместо имени = {}", newUser.getName());
         }
+    }
+
+    private User findUser(int userId) {
+        User found = userStorage.getById(userId);
+        if (found == null) {
+            throw new NotFoundException("Пользователя с id = " + userId + " не найден.");
+        }
+        return found;
     }
 }

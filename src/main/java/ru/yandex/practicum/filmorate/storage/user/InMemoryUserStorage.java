@@ -44,30 +44,26 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public void addFriend(int userId, int friendId) {
-        log.info("Добавление в друзья друг другу пользователей {} и {}", friendId, userId);
-        User foundUser = findUser(userId);
-        User foundFriend = findUser(friendId);
-        foundUser.addFiend(friendId);
-        foundFriend.addFiend(userId);
+    public void addFriend(User user, User friend) {
+        log.info("Добавление в друзья друг другу пользователей {} и {}", user.getId(), friend.getId());
+        user.addFiend(friend.getId());
+        friend.addFiend(user.getId());
         log.info("Пользователи были успешно добавлены в друзья");
     }
 
     @Override
-    public void deleteFriend(int userId, int friendId) {
-        log.info("Удаление из друзей друг друга пользователей {} и {}", friendId, userId);
-        User foundUser = findUser(userId);
-        User foundFriend = findUser(friendId);
-        foundUser.removeFriend(friendId);
-        foundFriend.removeFriend(userId);
+    public void deleteFriend(User user, User friend) {
+        log.info("Удаление из друзей друг друга пользователей {} и {}", user.getId(), friend.getId());
+        user.removeFriend(friend.getId());
+        friend.removeFriend(user.getId());
         log.info("Пользователи были успешно удалены из друзей");
     }
 
     @Override
-    public List<User> getCommonFriends(int userId, int otherId) {
-        log.info("Получение общих друзей пользователей {} и {}", userId, otherId);
-        Stream<Integer> userFriendsStream = findUser(userId).getFriendsIdsStream();
-        Set<Integer> otherFriends = findUser(otherId).getFriendsIdsCopy();
+    public List<User> getCommonFriends(User user, User other) {
+        log.info("Получение общих друзей пользователей {} и {}", user.getId(), other.getId());
+        Stream<Integer> userFriendsStream = user.getFriendsIdsStream();
+        Set<Integer> otherFriends = other.getFriendsIdsCopy();
         return userFriendsStream
                 .map(users::get)
                 .filter(f -> f != null && otherFriends.contains(f.getId()))
@@ -88,19 +84,11 @@ public class InMemoryUserStorage implements UserStorage {
     }
 
     @Override
-    public List<User> getFriends(int id) {
-        log.info("Получение всех друзей пользователя {}", id);
-        return findUser(id).getFriendsIdsStream()
+    public List<User> getFriends(User user) {
+        log.info("Получение всех друзей пользователя {}", user.getId());
+        return user.getFriendsIdsStream()
                 .map(users::get)
                 .filter(Objects::nonNull)
                 .toList();
-    }
-
-    private User findUser(int userId) {
-        User found = users.get(userId);
-        if (found == null) {
-            throw new NotFoundException("Пользователя с id = " + userId + " не найден.");
-        }
-        return found;
     }
 }
