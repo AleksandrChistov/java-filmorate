@@ -17,10 +17,8 @@ public class InMemoryFilmLikesStorage implements FilmLikesStorage {
     public void addLike(long filmId, long userId) {
         log.info("Добавление лайка пользователем {} к фильму {}", userId, filmId);
         Set<Long> likes = filmLikes.getOrDefault(filmId, new HashSet<>());
-        if (likes.isEmpty()) {
-            throw new NotFoundException("Фильм не найден с ID = " + filmId);
-        }
         likes.add(userId);
+        filmLikes.put(filmId, likes);
         log.info("Лайк успешно добавлен");
     }
 
