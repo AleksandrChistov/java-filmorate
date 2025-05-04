@@ -7,9 +7,9 @@ import java.util.List;
 
 public interface FilmStorage extends Storage<Film> {
 
-    void addLike(Film film, long userId);
+    void addLike(long filmId, long userId);
 
-    void deleteLike(Film film, long userId);
+    boolean deleteLike(long filmId, long userId);
 
     List<Film> getPopularFilmsByCount(long count);
 }

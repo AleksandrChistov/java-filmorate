@@ -1,7 +1,7 @@
 package ru.yandex.practicum.filmorate.dal.storage.film;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.excepton.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.filmorate.util.CommonUtil.getNextId;
 
-@Component
+@Repository
 @Slf4j
 public class InMemoryFilmStorage implements FilmStorage {
     private final Map<Long, Film> films = new HashMap<>();
@@ -60,17 +60,28 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
-    public void addLike(Film film, long userId) {
-        log.info("Добавление лайка пользователем {} к фильму {}", userId, film.getId());
+    public void addLike(long filmId, long userId) {
+        log.info("Добавление лайка пользователем {} к фильму {}", userId, filmId);
+        Film film = films.get(filmId);
+        if (film == null) {
+            throw new NotFoundException("Фильм не найден с ID = " + filmId);
+        }
         film.addLike(userId);
         log.info("Лайк успешно добавлен");
     }
 
     @Override
-    public void deleteLike(Film film, long userId) {
-        log.info("Удаление лайка пользователем {} из фильма {}", userId, film.getId());
-        film.removeLike(userId);
-        log.info("Лайк успешно удален");
+    public boolean deleteLike(long filmId, long userId) {
+        log.info("Удаление лайка пользователем {} из фильма {}", userId, filmId);
+        Film film = films.get(filmId);
+        if (film == null) {
+            throw new NotFoundException("Фильм не найден с ID = " + filmId);
+        }
+        boolean isDeleted = film.removeLike(userId);
+        if (isDeleted) {
+            log.info("Лайк успешно удален");
+        }
+        return isDeleted;
     }
 
     @Override

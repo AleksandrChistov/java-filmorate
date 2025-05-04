@@ -1,0 +1,98 @@
+package ru.yandex.practicum.filmorate.dal.storage.film;
+
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
+import ru.yandex.practicum.filmorate.dal.storage.BaseDbStorage;
+import ru.yandex.practicum.filmorate.model.Film;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+
+@Repository
+public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
+    private static final String INSERT_FILM_QUERY = "INSERT films (name, description, release_date, duration, mpa_id) " +
+            "VALUES (?, ?, ?, ?, ?) returning id";
+    private static final String UPDATE_FILM_QUERY = "UPDATE films SET name = ?, description = ?, " +
+            "release_date = ?, duration = ?, mpa_id = ? WHERE id = ?";
+    private static final String DELETE_FILM_BY_ID_QUERY = "DELETE FROM films WHERE id = ?";
+    private static final String FIND_ALL_FILMS_WITH_MPA_QUERY = "SELECT " +
+            "f.id, f.name, f.description, f.release_date, f.duration, " +
+            "mpa.id AS mpa_id, mpa.name AS mpa_name FROM films f " +
+            "LEFT JOIN mpa ON mpa.id = f.mpa_id";
+    private static final String FIND_FILM_WITH_MPA_BY_ID_QUERY = "SELECT " +
+            "f.id, f.name, f.description, f.release_date, f.duration, " +
+            "mpa.id AS mpa_id, mpa.name AS mpa_name FROM films f " +
+            "LEFT JOIN mpa ON mpa.id = f.mpa_id " +
+            "WHERE id = ?";
+
+    private static final String INSERT_LIKE_QUERY = "INSERT films_likes (film_id, user_id) VALUES (?, ?) returning id";
+    private static final String DELETE_LIKE_QUERY = "DELETE FROM films_likes WHERE film_id = ? AND user_id = ?";
+
+    public FilmDbStorage(JdbcTemplate jdbc, RowMapper<Film> mapper) {
+        super(jdbc, mapper);
+    }
+
+    @Override
+    public Film add(Film newFilm) {
+        long id = insert(
+                INSERT_FILM_QUERY,
+                newFilm.getName(),
+                newFilm.getDescription(),
+                newFilm.getReleaseDate(),
+                newFilm.getDuration(),
+                newFilm.getMpaId()
+        );
+        newFilm.setId(id);
+        return newFilm;
+    }
+
+    @Override
+    public Film update(Film updatedFilm) {
+        update(
+                UPDATE_FILM_QUERY,
+                updatedFilm.getName(),
+                updatedFilm.getDescription(),
+                updatedFilm.getReleaseDate(),
+                updatedFilm.getDuration(),
+                updatedFilm.getMpaId(),
+                updatedFilm.getId()
+        );
+        return updatedFilm;
+    }
+
+    @Override
+    public boolean delete(long filmId) {
+        return delete(DELETE_FILM_BY_ID_QUERY, filmId);
+    }
+
+    @Override
+    public List<Film> getAll() {
+        return findMany(FIND_ALL_FILMS_WITH_MPA_QUERY);
+    }
+
+    @Override
+    public Optional<Film> getById(long filmId) {
+        return findOne(FIND_FILM_WITH_MPA_BY_ID_QUERY, filmId);
+    }
+
+    @Override
+    public void addLike(long filmId, long userId) {
+        insert(INSERT_LIKE_QUERY, filmId, userId);
+    }
+
+    @Override
+    public boolean deleteLike(long filmId, long userId) {
+        return delete(DELETE_LIKE_QUERY, filmId, userId);
+    }
+
+    @Override
+    public List<Film> getPopularFilmsByCount(long count) {
+        return getAll().stream()
+                .sorted(Comparator.comparingInt(Film::getLikesCount).reversed())
+                .limit(count)
+                .collect(Collectors.toList());
+    }
+}

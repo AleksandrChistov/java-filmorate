@@ -4,6 +4,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 
+import java.util.Arrays;
+
 @RequiredArgsConstructor
 @Getter
 @ToString
@@ -15,4 +17,11 @@ public enum RatingMPA {
     NC17("NC-17"); // лицам до 18 лет просмотр запрещён
 
     private final String title;
+
+    public static RatingMPA fromTitle(String title) {
+        return Arrays.stream(RatingMPA.values())
+                .filter(rating -> rating.getTitle().equals(title))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Рейтинг MPA не был найден с именем: " + title));
+    }
 }

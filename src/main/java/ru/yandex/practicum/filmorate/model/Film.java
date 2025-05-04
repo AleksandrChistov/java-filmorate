@@ -1,11 +1,13 @@
 package ru.yandex.practicum.filmorate.model;
 
-import jakarta.validation.constraints.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
-import ru.yandex.practicum.filmorate.enums.RatingMPA;
 import ru.yandex.practicum.filmorate.validation.Group;
 import ru.yandex.practicum.filmorate.validation.ReleaseDate;
 
@@ -13,9 +15,6 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
-/**
- * Film.
- */
 @Data
 @AllArgsConstructor
 public class Film {
@@ -30,35 +29,47 @@ public class Film {
     private LocalDate releaseDate;
     @NotNull(groups = {Group.OnCreate.class, Group.OnUpdate.class})
     @Positive(groups = {Group.OnCreate.class, Group.OnUpdate.class})
-    private Integer duration;
+    private int duration;
     @NotNull
-    private RatingMPA ratingMPA;
+    private long mpaId;
     @Getter(AccessLevel.NONE)
-    private final Set<Long> likes = new HashSet<>();
+    private final Set<Long> genresIds = new HashSet<>();
     @Getter(AccessLevel.NONE)
-    private final Set<String> genres = new HashSet<>();
+    private final Set<Long> likesIds = new HashSet<>();
 
-    public void addLike(long userId) {
-        likes.add(userId);
+    public void addGenre(long genreId) {
+        genresIds.add(genreId);
     }
 
-    public void removeLike(long userId) {
-        likes.remove(userId);
+    public void addGenres(Set<Long> newGenresIds) {
+        genresIds.addAll(newGenresIds);
+    }
+
+    public void removeGenre(long genreId) {
+        genresIds.remove(genreId);
+    }
+
+    public Set<Long> getGenresIds() {
+        return new HashSet<>(genresIds);
+    }
+
+    public void addLike(long userId) {
+        likesIds.add(userId);
+    }
+
+    public void addLikes(Set<Long> newLikes) {
+        likesIds.addAll(newLikes);
+    }
+
+    public boolean removeLike(long userId) {
+        return likesIds.remove(userId);
+    }
+
+    public Set<Long> getLikesIds() {
+        return new HashSet<>(likesIds);
     }
 
     public int getLikesCount() {
-        return likes.size();
-    }
-
-    public void addGenre(String genre) {
-        genres.add(genre);
-    }
-
-    public void removeGenre(String genre) {
-        genres.remove(genre);
-    }
-
-    public Set<String> getGenres() {
-        return new HashSet<>(genres);
+        return likesIds.size();
     }
 }
