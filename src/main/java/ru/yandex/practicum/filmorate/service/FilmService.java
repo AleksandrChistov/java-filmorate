@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.dto.FilmDto;
+import ru.yandex.practicum.filmorate.dal.dto.GenreDto;
 import ru.yandex.practicum.filmorate.dal.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.excepton.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
@@ -16,23 +17,26 @@ import java.util.stream.Collectors;
 @Slf4j
 public class FilmService {
     private final FilmStorage filmStorage;
-    private final UserService userService;
+    private final GenreService genreService;
 
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, UserService userService) {
+    public FilmService(
+            @Qualifier("filmDbStorage") FilmStorage filmStorage,
+            GenreService genreService
+    ) {
         this.filmStorage = filmStorage;
-        this.userService = userService;
+        this.genreService = genreService;
     }
 
     public List<FilmDto> getAll() {
-        // todo: get Genre and likesIds from its DBs
+        // todo: get likesIds from its DB
         return filmStorage.getAll().stream()
-                .map(FilmMapper::mapToFilmDto)
+                .map(this::mapToFilmDto)
                 .collect(Collectors.toList());
     }
 
     public FilmDto getById(long filmId) {
         return filmStorage.getById(filmId)
-                .map(FilmMapper::mapToFilmDto)
+                .map(this::mapToFilmDto)
                 .orElseThrow(() -> new NotFoundException("Фильма с id = " + filmId + " не найден."));
     }
 
@@ -44,7 +48,7 @@ public class FilmService {
 
         log.info("Фильм успешно добавлен, id = {}", film.getId());
 
-        return FilmMapper.mapToFilmDto(film);
+        return mapToFilmDto(film);
     }
 
     public FilmDto update(long filmId, FilmDto newFilm) {
@@ -60,7 +64,7 @@ public class FilmService {
 
         log.info("Фильм успешно обновлен, id = {}", updatedFilm.getId());
 
-        return FilmMapper.mapToFilmDto(updatedFilm);
+        return mapToFilmDto(updatedFilm);
     }
 
     public boolean delete(long filmId) {
@@ -69,14 +73,14 @@ public class FilmService {
 
     public void addLike(long filmId, long userId) {
         log.info("Добавление лайка пользователем {} к фильму {}", userId, filmId);
-        checkUserIsPresent(userId);
+        checkFilmIsPresent(userId);
         filmStorage.addLike(filmId, userId);
         log.info("Лайк успешно добавлен");
     }
 
     public boolean deleteLike(long filmId, long userId) {
         log.info("Удаление лайка пользователем {} из фильма {}", userId, userId);
-        checkUserIsPresent(userId);
+        checkFilmIsPresent(userId);
         boolean isDeleted = filmStorage.deleteLike(filmId, userId);
         if (isDeleted) {
             log.info("Лайк успешно удален");
@@ -87,11 +91,16 @@ public class FilmService {
     public List<FilmDto> getPopularFilmsByCount(long count) {
         log.info("Получение списка популярных фильмов в количестве {}", count);
         return filmStorage.getPopularFilmsByCount(count).stream()
-                .map(FilmMapper::mapToFilmDto)
+                .map(this::mapToFilmDto)
                 .collect(Collectors.toList());
     }
 
-    private void checkUserIsPresent(long userId) {
-        userService.getById(userId);
+    private void checkFilmIsPresent(long filmId) {
+        getById(filmId);
+    }
+
+    private FilmDto mapToFilmDto(Film film) {
+        List<GenreDto> genreDtos = genreService.getAllByFilmId(film.getId());
+        return FilmMapper.mapToFilmDto(film, genreDtos);
     }
 }

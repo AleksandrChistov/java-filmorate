@@ -31,4 +31,10 @@ public class GenreService {
                 .map(GenreMapper::mapToGenreDto)
                 .orElseThrow(() -> new NotFoundException("Жанр с id = " + genreId + " не найден."));
     }
+
+    public List<GenreDto> getAllByFilmId(long filmId) {
+        return genreStorage.getAllByFilmId(filmId).stream()
+                .map(GenreMapper::mapToGenreDto)
+                .collect(Collectors.toList());
+    }
 }

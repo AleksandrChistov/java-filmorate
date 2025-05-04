@@ -9,5 +9,7 @@ public interface GenreStorage {
 
     List<Genre> getAll();
 
-    Optional<Genre> getById(long id);
+    Optional<Genre> getById(long genreId);
+
+    List<Genre> getAllByFilmId(long filmId);
 }
