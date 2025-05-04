@@ -130,7 +130,7 @@ class UserControllerTest {
     @Test
     void updateWithIdValidationException() throws Exception {
         User userWithNullId = new User(null, "User name", "userLogin", "email@mail.ru", LocalDate.now().minusDays(1));
-        User userWithNotFoundId = new User(1, "User name", "userLogin", "email@mail.ru", LocalDate.now().minusDays(1));
+        User userWithNotFoundId = new User(1L, "User name", "userLogin", "email@mail.ru", LocalDate.now().minusDays(1));
 
         mockMvc.perform(MockMvcRequestBuilders.put(UserController.URL)
                         .contentType(MediaType.APPLICATION_JSON)

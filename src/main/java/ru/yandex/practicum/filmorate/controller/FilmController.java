@@ -24,13 +24,13 @@ public class FilmController {
         return filmService.getAll();
     }
 
-    @GetMapping("/{id}")
-    public Film findById(@PathVariable @Min(1) int id) {
-        return filmService.getById(id);
+    @GetMapping("/{filmId}")
+    public Film findById(@PathVariable @Min(1) long filmId) {
+        return filmService.getById(filmId);
     }
 
     @GetMapping("/popular")
-    public List<Film> findPopularFilmsByCount(@RequestParam(defaultValue = "10") int count) {
+    public List<Film> findPopularFilmsByCount(@RequestParam(defaultValue = "10") long count) {
         return filmService.getPopularFilmsByCount(count);
     }
 
@@ -39,19 +39,21 @@ public class FilmController {
         return filmService.create(newFilm);
     }
 
-    @PutMapping
-    public Film update(@Validated(Group.OnUpdate.class) @RequestBody Film newFilm) {
-        return filmService.update(newFilm);
+    @PutMapping("/{filmId}")
+    public Film update(
+            @PathVariable long filmId,
+            @Validated(Group.OnUpdate.class) @RequestBody Film newFilm) {
+        return filmService.update(filmId, newFilm);
     }
 
-    @PutMapping("/{id}/like/{userId}")
-    public void addLike(@PathVariable @Min(1) int id, @PathVariable @Min(1) int userId) {
-        filmService.addLike(id, userId);
+    @PutMapping("/{filmId}/like/{userId}")
+    public void addLike(@PathVariable @Min(1) long filmId, @PathVariable @Min(1) long userId) {
+        filmService.addLike(filmId, userId);
     }
 
-    @DeleteMapping("/{id}/like/{userId}")
-    public void deleteLike(@PathVariable @Min(1) int id, @PathVariable @Min(1) int userId) {
-        filmService.deleteLike(id, userId);
+    @DeleteMapping("/{filmId}/like/{userId}")
+    public void deleteLike(@PathVariable @Min(1) long filmId, @PathVariable @Min(1) long userId) {
+        filmService.deleteLike(filmId, userId);
     }
 
 }

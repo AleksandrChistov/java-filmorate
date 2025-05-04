@@ -9,6 +9,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import ru.yandex.practicum.filmorate.enums.RatingMPA;
 import ru.yandex.practicum.filmorate.excepton.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -29,8 +30,8 @@ class FilmControllerTest {
 
     @Test
     void createWithNameValidationException() throws Exception {
-        Film filmWithNullName = new Film(null, null, "Film description", LocalDate.now(), 60);
-        Film filmWithEmptyName = new Film(null, "", "Film description", LocalDate.now(), 60);
+        Film filmWithNullName = new Film(null, null, "Film description", LocalDate.now(), 60, RatingMPA.G);
+        Film filmWithEmptyName = new Film(null, "", "Film description", LocalDate.now(), 60, RatingMPA.G);
 
         mockMvc.perform(MockMvcRequestBuilders.post(FilmController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -49,10 +50,10 @@ class FilmControllerTest {
 
     @Test
     void createWithDescriptionValidationException() throws Exception {
-        Film filmWithNullDescription = new Film(null, "Film Name", null, LocalDate.now(), 60);
-        Film filmWithEmptyDescription = new Film(null, "Film Name", "", LocalDate.now(), 60);
+        Film filmWithNullDescription = new Film(null, "Film Name", null, LocalDate.now(), 60, RatingMPA.G);
+        Film filmWithEmptyDescription = new Film(null, "Film Name", "", LocalDate.now(), 60, RatingMPA.G);
         String chars201 = "Description with overall 201 chars Description with overall 201 chars Description with overall 201 chars Description with overall 201 chars Description with overall 201 chars Description overall 201 ch";
-        Film filmWithMoreThan200CharsDescription = new Film(null, "Film Name", chars201, LocalDate.now(), 60);
+        Film filmWithMoreThan200CharsDescription = new Film(null, "Film Name", chars201, LocalDate.now(), 60, RatingMPA.G);
 
         mockMvc.perform(MockMvcRequestBuilders.post(FilmController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -78,8 +79,8 @@ class FilmControllerTest {
 
     @Test
     void createWithReleaseDateValidationException() throws Exception {
-        Film filmWithNullReleaseDate = new Film(null, "Film name", "Film description", null, 60);
-        Film filmWithReleaseDateBeforeMinDate = new Film(null, "Film name", "Film description", MIN_RELEASE_DATE.minusDays(1), 60);
+        Film filmWithNullReleaseDate = new Film(null, "Film name", "Film description", null, 60, RatingMPA.G);
+        Film filmWithReleaseDateBeforeMinDate = new Film(null, "Film name", "Film description", MIN_RELEASE_DATE.minusDays(1), 60, RatingMPA.G);
 
         mockMvc.perform(MockMvcRequestBuilders.post(FilmController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -98,8 +99,8 @@ class FilmControllerTest {
 
     @Test
     void createWithDurationValidationException() throws Exception {
-        Film filmWithNullDuration = new Film(null, "Film name", "Film description", LocalDate.now(), null);
-        Film filmWithNegativeDuration = new Film(null, "Film name", "Film description", LocalDate.now(), -1);
+        Film filmWithNullDuration = new Film(null, "Film name", "Film description", LocalDate.now(), null, RatingMPA.G);
+        Film filmWithNegativeDuration = new Film(null, "Film name", "Film description", LocalDate.now(), -1, RatingMPA.G);
 
         mockMvc.perform(MockMvcRequestBuilders.post(FilmController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -118,8 +119,8 @@ class FilmControllerTest {
 
     @Test
     void updateWithIdValidationException() throws Exception {
-        Film filmWithNullId = new Film(null, "Film name", "Film description", LocalDate.now(), 60);
-        Film filmWithNotFoundId = new Film(1, "Film name", "Film description", LocalDate.now(), 60);
+        Film filmWithNullId = new Film(null, "Film name", "Film description", LocalDate.now(), 60, RatingMPA.G);
+        Film filmWithNotFoundId = new Film(1L, "Film name", "Film description", LocalDate.now(), 60, RatingMPA.G);
 
         mockMvc.perform(MockMvcRequestBuilders.put(FilmController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -138,8 +139,8 @@ class FilmControllerTest {
 
     @Test
     void updateWithNameValidationException() throws Exception {
-        Film filmWithNullName = new Film(1, null, "Film description", LocalDate.now(), 60);
-        Film filmWithEmptyName = new Film(1, "", "Film description", LocalDate.now(), 60);
+        Film filmWithNullName = new Film(1L, null, "Film description", LocalDate.now(), 60, RatingMPA.G);
+        Film filmWithEmptyName = new Film(1L, "", "Film description", LocalDate.now(), 60, RatingMPA.G);
 
         mockMvc.perform(MockMvcRequestBuilders.put(FilmController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -158,10 +159,10 @@ class FilmControllerTest {
 
     @Test
     void updateWithDescriptionValidationException() throws Exception {
-        Film filmWithNullDescription = new Film(null, "Film Name", null, LocalDate.now(), 60);
-        Film filmWithEmptyDescription = new Film(null, "Film Name", "", LocalDate.now(), 60);
+        Film filmWithNullDescription = new Film(null, "Film Name", null, LocalDate.now(), 60, RatingMPA.G);
+        Film filmWithEmptyDescription = new Film(null, "Film Name", "", LocalDate.now(), 60, RatingMPA.G);
         String chars201 = "Description with overall 201 chars Description with overall 201 chars Description with overall 201 chars Description with overall 201 chars Description with overall 201 chars Description overall 201 ch";
-        Film filmWithMoreThan200CharsDescription = new Film(null, "Film Name", chars201, LocalDate.now(), 60);
+        Film filmWithMoreThan200CharsDescription = new Film(null, "Film Name", chars201, LocalDate.now(), 60, RatingMPA.G);
 
         mockMvc.perform(MockMvcRequestBuilders.put(FilmController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -187,8 +188,8 @@ class FilmControllerTest {
 
     @Test
     void updateWithReleaseDateValidationException() throws Exception {
-        Film filmWithNullReleaseDate = new Film(null, "Film name", "Film description", null, 60);
-        Film filmWithReleaseDateBeforeMinDate = new Film(null, "Film name", "Film description", MIN_RELEASE_DATE.minusDays(1), 60);
+        Film filmWithNullReleaseDate = new Film(null, "Film name", "Film description", null, 60, RatingMPA.G);
+        Film filmWithReleaseDateBeforeMinDate = new Film(null, "Film name", "Film description", MIN_RELEASE_DATE.minusDays(1), 60, RatingMPA.G);
 
         mockMvc.perform(MockMvcRequestBuilders.put(FilmController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -207,8 +208,8 @@ class FilmControllerTest {
 
     @Test
     void updateWithDurationValidationException() throws Exception {
-        Film filmWithNullDuration = new Film(null, "Film name", "Film description", LocalDate.now(), null);
-        Film filmWithNegativeDuration = new Film(null, "Film name", "Film description", LocalDate.now(), -1);
+        Film filmWithNullDuration = new Film(null, "Film name", "Film description", LocalDate.now(), null, RatingMPA.G);
+        Film filmWithNegativeDuration = new Film(null, "Film name", "Film description", LocalDate.now(), -1, RatingMPA.G);
 
         mockMvc.perform(MockMvcRequestBuilders.put(FilmController.URL)
                         .contentType(MediaType.APPLICATION_JSON)

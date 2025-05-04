@@ -4,7 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.excepton.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.dal.storage.film.FilmStorage;
 
 import java.util.List;
 
@@ -18,47 +18,45 @@ public class FilmService {
         return filmStorage.getAll();
     }
 
-    public Film getById(int id) {
-        return filmStorage.getById(id);
+    public Film getById(long id) {
+        return findFilm(id);
     }
 
     public Film create(Film newFilm) {
         return filmStorage.add(newFilm);
     }
 
-    public Film update(Film newFilm) {
+    public Film update(long filmId, Film newFilm) {
+        newFilm.setId(filmId);
         return filmStorage.update(newFilm);
     }
 
-    public Film delete(int filmId) {
+    public boolean delete(long filmId) {
         return filmStorage.delete(filmId);
     }
 
-    public void addLike(int filmId, int userId) {
+    public void addLike(long filmId, long userId) {
         checkUserIsPresent(userId);
         Film film = findFilm(filmId);
         filmStorage.addLike(film, userId);
     }
 
-    public void deleteLike(int filmId, int userId) {
+    public void deleteLike(long filmId, long userId) {
         checkUserIsPresent(userId);
         Film film = findFilm(filmId);
         filmStorage.deleteLike(film, userId);
     }
 
-    public List<Film> getPopularFilmsByCount(int count) {
+    public List<Film> getPopularFilmsByCount(long count) {
         return filmStorage.getPopularFilmsByCount(count);
     }
 
-    private Film findFilm(int filmId) {
-        Film foundFilm = filmStorage.getById(filmId);
-        if (foundFilm == null) {
-            throw new NotFoundException("Фильма с id = " + filmId + " не найден.");
-        }
-        return foundFilm;
+    private Film findFilm(long filmId) {
+        return filmStorage.getById(filmId)
+                .orElseThrow(() -> new NotFoundException("Фильма с id = " + filmId + " не найден."));
     }
 
-    private void checkUserIsPresent(int userId) {
+    private void checkUserIsPresent(long userId) {
         userService.getById(userId);
     }
 }
