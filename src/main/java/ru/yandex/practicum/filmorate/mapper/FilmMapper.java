@@ -29,7 +29,7 @@ public class FilmMapper {
         return film;
     }
 
-    public static FilmDto mapToFilmDto(Film film, List<GenreDto> genreDto) {
+    public static FilmDto mapToFilmDto(Film film, List<GenreDto> genreDto, Set<Long> filmLikes) {
         Set<Long> genresIds = genreDto.stream().map(GenreDto::getId).collect(Collectors.toSet());
 
         return new FilmDto(
@@ -40,7 +40,7 @@ public class FilmMapper {
                 film.getDuration(),
                 film.getMpaId(),
                 genresIds,
-                film.getLikesIds()
+                filmLikes
         );
     }
 }

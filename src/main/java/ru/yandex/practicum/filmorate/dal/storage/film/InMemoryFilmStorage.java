@@ -59,32 +59,6 @@ public class InMemoryFilmStorage implements FilmStorage {
         return Optional.ofNullable(films.get(id));
     }
 
-    @Override
-    public void addLike(long filmId, long userId) {
-        log.info("Добавление лайка пользователем {} к фильму {}", userId, filmId);
-        Film film = films.get(filmId);
-        if (film == null) {
-            throw new NotFoundException("Фильм не найден с ID = " + filmId);
-        }
-        film.addLike(userId);
-        log.info("Лайк успешно добавлен");
-    }
-
-    @Override
-    public boolean deleteLike(long filmId, long userId) {
-        log.info("Удаление лайка пользователем {} из фильма {}", userId, filmId);
-        Film film = films.get(filmId);
-        if (film == null) {
-            throw new NotFoundException("Фильм не найден с ID = " + filmId);
-        }
-        boolean isDeleted = film.removeLike(userId);
-        if (isDeleted) {
-            log.info("Лайк успешно удален");
-        }
-        return isDeleted;
-    }
-
-    @Override
     public List<Film> getPopularFilmsByCount(long count) {
         log.info("Получение списка популярных фильмов в количестве {}", count);
         return films.values().stream()

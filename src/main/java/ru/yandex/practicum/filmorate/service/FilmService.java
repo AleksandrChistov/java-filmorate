@@ -11,6 +11,7 @@ import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,17 +19,18 @@ import java.util.stream.Collectors;
 public class FilmService {
     private final FilmStorage filmStorage;
     private final GenreService genreService;
+    private final FilmLikesService filmLikesService;
 
     public FilmService(
             @Qualifier("filmDbStorage") FilmStorage filmStorage,
-            GenreService genreService
+            GenreService genreService, FilmLikesService filmLikesService
     ) {
         this.filmStorage = filmStorage;
         this.genreService = genreService;
+        this.filmLikesService = filmLikesService;
     }
 
     public List<FilmDto> getAll() {
-        // todo: get likesIds from its DB
         return filmStorage.getAll().stream()
                 .map(this::mapToFilmDto)
                 .collect(Collectors.toList());
@@ -71,23 +73,6 @@ public class FilmService {
         return filmStorage.delete(filmId);
     }
 
-    public void addLike(long filmId, long userId) {
-        log.info("Добавление лайка пользователем {} к фильму {}", userId, filmId);
-        checkFilmIsPresent(userId);
-        filmStorage.addLike(filmId, userId);
-        log.info("Лайк успешно добавлен");
-    }
-
-    public boolean deleteLike(long filmId, long userId) {
-        log.info("Удаление лайка пользователем {} из фильма {}", userId, userId);
-        checkFilmIsPresent(userId);
-        boolean isDeleted = filmStorage.deleteLike(filmId, userId);
-        if (isDeleted) {
-            log.info("Лайк успешно удален");
-        }
-        return isDeleted;
-    }
-
     public List<FilmDto> getPopularFilmsByCount(long count) {
         log.info("Получение списка популярных фильмов в количестве {}", count);
         return filmStorage.getPopularFilmsByCount(count).stream()
@@ -95,12 +80,9 @@ public class FilmService {
                 .collect(Collectors.toList());
     }
 
-    private void checkFilmIsPresent(long filmId) {
-        getById(filmId);
-    }
-
     private FilmDto mapToFilmDto(Film film) {
         List<GenreDto> genreDtos = genreService.getAllByFilmId(film.getId());
-        return FilmMapper.mapToFilmDto(film, genreDtos);
+        Set<Long> likes = filmLikesService.getLikesByFilmId(film.getId());
+        return FilmMapper.mapToFilmDto(film, genreDtos, likes);
     }
 }

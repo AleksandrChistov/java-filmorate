@@ -26,10 +26,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             "f.id, f.name, f.description, f.release_date, f.duration, " +
             "mpa.id AS mpa_id, mpa.name AS mpa_name FROM films f " +
             "LEFT JOIN mpa ON mpa.id = f.mpa_id " +
-            "WHERE id = ?";
-
-    private static final String INSERT_LIKE_QUERY = "INSERT films_likes (film_id, user_id) VALUES (?, ?) returning id";
-    private static final String DELETE_LIKE_QUERY = "DELETE FROM films_likes WHERE film_id = ? AND user_id = ?";
+            "WHERE f.id = ?";
 
     public FilmDbStorage(JdbcTemplate jdbc, RowMapper<Film> mapper) {
         super(jdbc, mapper);
@@ -76,16 +73,6 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     @Override
     public Optional<Film> getById(long filmId) {
         return findOne(FIND_FILM_WITH_MPA_BY_ID_QUERY, filmId);
-    }
-
-    @Override
-    public void addLike(long filmId, long userId) {
-        insert(INSERT_LIKE_QUERY, filmId, userId);
-    }
-
-    @Override
-    public boolean deleteLike(long filmId, long userId) {
-        return delete(DELETE_LIKE_QUERY, filmId, userId);
     }
 
     @Override
