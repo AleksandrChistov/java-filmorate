@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public class FilmLikesDbStorage extends BaseDbStorage<FilmLikes> implements FilmLikesStorage {
-    private static final String INSERT_LIKE_QUERY = "INSERT films_likes (film_id, user_id) VALUES (?, ?) returning id";
+    private static final String INSERT_LIKE_QUERY = "INSERT INTO films_likes (film_id, user_id) VALUES (?, ?)";
     private static final String DELETE_LIKE_QUERY = "DELETE FROM films_likes WHERE film_id = ? AND user_id = ?";
     private static final String FIND_LIKES_BY_FILM_ID_QUERY = "SELECT * FROM films_likes WHERE film_id = ?";
 
