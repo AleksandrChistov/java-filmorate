@@ -10,7 +10,7 @@ import java.util.List;
 
 @Repository
 public class FriendshipDbStorage extends BaseDbStorage<Friendship> implements FriendshipStorage {
-    private static final String INSERT_FRIEND_QUERY = "INSERT friendship (user_id, friend_id) VALUES (?, ?) returning id";
+    private static final String INSERT_FRIEND_QUERY = "INSERT INTO friendship (user_id, friend_id) VALUES (?, ?)";
     private static final String DELETE_FRIEND_QUERY = "DELETE FROM friendship WHERE user_id = ? AND friend_id = ?";
     private static final String FIND_ALL_BY_USER_ID_QUERY = "SELECT * FROM friendship WHERE user_id = ?";
 
@@ -32,7 +32,7 @@ public class FriendshipDbStorage extends BaseDbStorage<Friendship> implements Fr
     public List<Long> getCommonFriendsIds(long userId, long otherId) {
         List<Long> userFriendsIds = getFriendsIds(userId);
         List<Long> otherFriendsIds = getFriendsIds(otherId);
-        
+
         return userFriendsIds.stream()
                 .filter(otherFriendsIds::contains)
                 .toList();
