@@ -6,7 +6,6 @@ import ru.yandex.practicum.filmorate.excepton.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.filmorate.util.CommonUtil.getNextId;
 
@@ -57,13 +56,5 @@ public class InMemoryFilmStorage implements FilmStorage {
             throw new NotFoundException("Фильм с id = {} не найден.");
         }
         return Optional.ofNullable(films.get(id));
-    }
-
-    public List<Film> getPopularFilmsByCount(long count) {
-        log.info("Получение списка популярных фильмов в количестве {}", count);
-        return films.values().stream()
-                .sorted(Comparator.comparingInt(Film::getLikesCount).reversed())
-                .limit(count)
-                .collect(Collectors.toList());
     }
 }

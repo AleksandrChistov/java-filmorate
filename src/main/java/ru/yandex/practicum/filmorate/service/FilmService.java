@@ -10,6 +10,7 @@ import ru.yandex.practicum.filmorate.excepton.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.model.Film;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -75,8 +76,10 @@ public class FilmService {
 
     public List<FilmDto> getPopularFilmsByCount(long count) {
         log.info("Получение списка популярных фильмов в количестве {}", count);
-        return filmStorage.getPopularFilmsByCount(count).stream()
+        return filmStorage.getAll().stream()
                 .map(this::mapToFilmDto)
+                .sorted(Comparator.comparingInt((FilmDto dto) -> dto.getLikesIds().size()).reversed())
+                .limit(count)
                 .collect(Collectors.toList());
     }
 

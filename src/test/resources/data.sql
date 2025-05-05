@@ -15,7 +15,7 @@ INSERT INTO mpa (name) VALUES ('PG-13');
 INSERT INTO genres (name) VALUES ('Триллер');
 INSERT INTO genres (name) VALUES ('Драма');
 
-INSERT INTO films (name, description, release_date, duration, mpa_id) VALUES ('Дурка', 'Фильм про дурака', '2010-02-20', 120, 1);
+INSERT INTO films (name, description, release_date, duration, mpa_id) VALUES ('Дурак', 'Фильм про дурака', '2010-02-20', 120, 1);
 INSERT INTO films (name, description, release_date, duration, mpa_id) VALUES ('Буратино', 'Фильм про деревянного мальчика', '1969-11-03', 90, 2);
 INSERT INTO films (name, description, release_date, duration, mpa_id) VALUES ('Моряк', 'Фильм про моряка', '1956-01-24', 95, 1);
 

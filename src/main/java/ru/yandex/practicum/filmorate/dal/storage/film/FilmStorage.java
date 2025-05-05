@@ -1,11 +1,7 @@
 package ru.yandex.practicum.filmorate.dal.storage.film;
 
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.dal.storage.Storage;
-
-import java.util.List;
+import ru.yandex.practicum.filmorate.model.Film;
 
 public interface FilmStorage extends Storage<Film> {
-
-    List<Film> getPopularFilmsByCount(long count);
 }
