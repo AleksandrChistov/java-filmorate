@@ -24,7 +24,6 @@ public class FilmMapper {
         );
 
         film.addGenres(filmDto.getGenresIds());
-        film.addLikes(filmDto.getLikesIds());
 
         return film;
     }

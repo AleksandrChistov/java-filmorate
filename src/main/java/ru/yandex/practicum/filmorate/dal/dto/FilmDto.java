@@ -20,7 +20,7 @@ public class FilmDto {
     @NotBlank
     private String name;
     @NotBlank
-    @Size
+    @Size(max = 200)
     private String description;
     @ReleaseDate
     private LocalDate releaseDate;
