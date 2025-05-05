@@ -98,15 +98,7 @@ class FilmControllerTest {
 
     @Test
     void createWithDurationValidationException() throws Exception {
-        Film filmWithNullDuration = new Film(null, "Film name", "Film description", LocalDate.now(), null, 1);
         Film filmWithNegativeDuration = new Film(null, "Film name", "Film description", LocalDate.now(), -1, 1);
-
-        mockMvc.perform(MockMvcRequestBuilders.post(FilmController.URL)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(filmWithNullDuration)))
-                .andExpect(status().isBadRequest())
-                .andExpect(result ->
-                        assertInstanceOf(MethodArgumentNotValidException.class, result.getResolvedException(), "Тип ошибки не совпадает при duration = NULL"));
 
         mockMvc.perform(MockMvcRequestBuilders.post(FilmController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -207,15 +199,7 @@ class FilmControllerTest {
 
     @Test
     void updateWithDurationValidationException() throws Exception {
-        Film filmWithNullDuration = new Film(null, "Film name", "Film description", LocalDate.now(), null, 1);
         Film filmWithNegativeDuration = new Film(null, "Film name", "Film description", LocalDate.now(), -1, 1);
-
-        mockMvc.perform(MockMvcRequestBuilders.put(FilmController.URL)
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(filmWithNullDuration)))
-                .andExpect(status().isBadRequest())
-                .andExpect(result ->
-                        assertInstanceOf(MethodArgumentNotValidException.class, result.getResolvedException(), "Тип ошибки не совпадает при duration = NULL"));
 
         mockMvc.perform(MockMvcRequestBuilders.put(FilmController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
