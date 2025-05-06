@@ -29,17 +29,17 @@ class MpaDbStorageTest {
         assertThat(mpaList)
                 .isNotNull()
                 .isNotEmpty()
-                .hasSize(2);
+                .hasSize(5);
     }
 
     @Test
     void getById() {
-        Optional<Mpa> mpaOptional = mpaStorage.getById(2);
+        Optional<Mpa> mpaOptional = mpaStorage.getById(3);
 
         assertThat(mpaOptional)
                 .isPresent()
                 .hasValueSatisfying(mpa -> {
-                    assertThat(mpa).hasFieldOrPropertyWithValue("id", 2L);
+                    assertThat(mpa).hasFieldOrPropertyWithValue("id", 3L);
                     assertThat(mpa).hasFieldOrPropertyWithValue("name", RatingMPA.PG13);
                 });
     }

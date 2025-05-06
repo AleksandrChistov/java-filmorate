@@ -12,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.bind.MethodArgumentNotValidException;
+import ru.yandex.practicum.filmorate.dal.dto.NewUserDto;
 import ru.yandex.practicum.filmorate.dal.dto.UserDto;
 import ru.yandex.practicum.filmorate.dal.mapper.FriendshipRowMapper;
 import ru.yandex.practicum.filmorate.dal.mapper.UserRowMapper;
@@ -39,9 +40,9 @@ class UserControllerTest {
 
     @Test
     void createWithEmailValidationException() throws Exception {
-        UserDto userWithNullEmail = new UserDto(null, "User Name", "userLogin", null, LocalDate.now().minusDays(1));
-        UserDto userWithEmptyEmail = new UserDto(null, "User Name", "userLogin", "", LocalDate.now().minusDays(1));
-        UserDto userWithWrongEmail = new UserDto(null, "User Name", "userLogin", "some-email.ru", LocalDate.now().minusDays(1));
+        NewUserDto userWithNullEmail = new NewUserDto("User Name", "userLogin", null, LocalDate.now().minusDays(1));
+        NewUserDto userWithEmptyEmail = new NewUserDto("User Name", "userLogin", "", LocalDate.now().minusDays(1));
+        NewUserDto userWithWrongEmail = new NewUserDto("User Name", "userLogin", "some-email.ru", LocalDate.now().minusDays(1));
 
         mockMvc.perform(MockMvcRequestBuilders.post(UserController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -67,9 +68,9 @@ class UserControllerTest {
 
     @Test
     void createWithLoginValidationException() throws Exception {
-        UserDto userWithNullLogin = new UserDto(null, "User Name", null, "email@mail.ru", LocalDate.now().minusDays(1));
-        UserDto userWithEmptyLogin = new UserDto(null, "User Name", "", "email@mail.ru", LocalDate.now().minusDays(1));
-        UserDto userWithSpacesLogin = new UserDto(null, "User Name", "  ", "email@mail.ru", LocalDate.now().minusDays(1));
+        NewUserDto userWithNullLogin = new NewUserDto("User Name", null, "email@mail.ru", LocalDate.now().minusDays(1));
+        NewUserDto userWithEmptyLogin = new NewUserDto("User Name", "", "email@mail.ru", LocalDate.now().minusDays(1));
+        NewUserDto userWithSpacesLogin = new NewUserDto("User Name", "  ", "email@mail.ru", LocalDate.now().minusDays(1));
 
         mockMvc.perform(MockMvcRequestBuilders.post(UserController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -95,8 +96,8 @@ class UserControllerTest {
 
     @Test
     void createWithBirthdayValidationException() throws Exception {
-        UserDto userWithNullBirthday = new UserDto(null, "User name", "userLogin", "email@mail.ru", null);
-        UserDto userWithBirthdayInFuture = new UserDto(null, "User name", "userLogin", "email@mail.ru", LocalDate.now().plusYears(1));
+        NewUserDto userWithNullBirthday = new NewUserDto("User name", "userLogin", "email@mail.ru", null);
+        NewUserDto userWithBirthdayInFuture = new NewUserDto("User name", "userLogin", "email@mail.ru", LocalDate.now().plusYears(1));
 
         mockMvc.perform(MockMvcRequestBuilders.post(UserController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -115,8 +116,8 @@ class UserControllerTest {
 
     @Test
     void createWithEmptyName() throws Exception {
-        UserDto userWithNullName = new UserDto(null, null, "userLogin", "email@mail.ru", LocalDate.now().minusDays(1));
-        UserDto userWithEmptyName = new UserDto(null, "", "userLogin2", "email@mail.ru", LocalDate.now().minusDays(1));
+        NewUserDto userWithNullName = new NewUserDto(null, "userLogin", "email@mail.ru", LocalDate.now().minusDays(1));
+        NewUserDto userWithEmptyName = new NewUserDto("", "userLogin2", "email@mail.ru", LocalDate.now().minusDays(1));
 
         String createdWithNullNameBody = mockMvc.perform(MockMvcRequestBuilders.post(UserController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -141,7 +142,7 @@ class UserControllerTest {
     void updateWithIdValidationException() throws Exception {
         UserDto userWithNotFoundId = new UserDto(7L, "User name", "userLogin7", "email@mail.ru", LocalDate.now().minusDays(1));
 
-        mockMvc.perform(MockMvcRequestBuilders.put(UserController.URL + "/7")
+        mockMvc.perform(MockMvcRequestBuilders.put(UserController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userWithNotFoundId)))
                 .andExpect(status().isNotFound())
@@ -155,21 +156,21 @@ class UserControllerTest {
         UserDto userWithEmptyEmail = new UserDto(null, "User Name", "userLogin", "", LocalDate.now().minusDays(1));
         UserDto userWithWrongEmail = new UserDto(null, "User Name", "userLogin", "some-email.ru", LocalDate.now().minusDays(1));
 
-        mockMvc.perform(MockMvcRequestBuilders.put(UserController.URL + "/1")
+        mockMvc.perform(MockMvcRequestBuilders.put(UserController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userWithNullEmail)))
                 .andExpect(status().isBadRequest())
                 .andExpect(result ->
                         assertInstanceOf(MethodArgumentNotValidException.class, result.getResolvedException(), "Тип ошибки не совпадает при email = NULL"));
 
-        mockMvc.perform(MockMvcRequestBuilders.put(UserController.URL + "/1")
+        mockMvc.perform(MockMvcRequestBuilders.put(UserController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userWithEmptyEmail)))
                 .andExpect(status().isBadRequest())
                 .andExpect(result ->
                         assertInstanceOf(MethodArgumentNotValidException.class, result.getResolvedException(), "Тип ошибки не совпадает при пустом email"));
 
-        mockMvc.perform(MockMvcRequestBuilders.put(UserController.URL + "/1")
+        mockMvc.perform(MockMvcRequestBuilders.put(UserController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userWithWrongEmail)))
                 .andExpect(status().isBadRequest())
@@ -183,21 +184,21 @@ class UserControllerTest {
         UserDto userWithEmptyLogin = new UserDto(null, "User Name", "", "email@mail.ru", LocalDate.now().minusDays(1));
         UserDto userWithSpacesLogin = new UserDto(null, "User Name", "  ", "email@mail.ru", LocalDate.now().minusDays(1));
 
-        mockMvc.perform(MockMvcRequestBuilders.put(UserController.URL + "/1")
+        mockMvc.perform(MockMvcRequestBuilders.put(UserController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userWithNullLogin)))
                 .andExpect(status().isBadRequest())
                 .andExpect(result ->
                         assertInstanceOf(MethodArgumentNotValidException.class, result.getResolvedException(), "Тип ошибки не совпадает при логине = NULL"));
 
-        mockMvc.perform(MockMvcRequestBuilders.put(UserController.URL + "/1")
+        mockMvc.perform(MockMvcRequestBuilders.put(UserController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userWithEmptyLogin)))
                 .andExpect(status().isBadRequest())
                 .andExpect(result ->
                         assertInstanceOf(MethodArgumentNotValidException.class, result.getResolvedException(), "Тип ошибки не совпадает при пустом логине"));
 
-        mockMvc.perform(MockMvcRequestBuilders.put(UserController.URL + "/1")
+        mockMvc.perform(MockMvcRequestBuilders.put(UserController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userWithSpacesLogin)))
                 .andExpect(status().isBadRequest())
@@ -210,14 +211,14 @@ class UserControllerTest {
         UserDto userWithNullBirthday = new UserDto(null, "User name", "userLogin", "email@mail.ru", null);
         UserDto userWithBirthdayInFuture = new UserDto(null, "User name", "userLogin", "email@mail.ru", LocalDate.now().plusYears(1));
 
-        mockMvc.perform(MockMvcRequestBuilders.put(UserController.URL + "/1")
+        mockMvc.perform(MockMvcRequestBuilders.put(UserController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userWithNullBirthday)))
                 .andExpect(status().isBadRequest())
                 .andExpect(result ->
                         assertInstanceOf(MethodArgumentNotValidException.class, result.getResolvedException(), "Тип ошибки не совпадает при birthday = NULL"));
 
-        mockMvc.perform(MockMvcRequestBuilders.put(UserController.URL + "/1")
+        mockMvc.perform(MockMvcRequestBuilders.put(UserController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(userWithBirthdayInFuture)))
                 .andExpect(status().isBadRequest())

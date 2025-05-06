@@ -12,10 +12,10 @@ import java.time.LocalDate;
 @Data
 @AllArgsConstructor
 public class NewUserDto {
+    private String name;
     @NotBlank
     private String login;
     @NotBlank
-    private String name;
     @Email
     private String email;
     @NotNull

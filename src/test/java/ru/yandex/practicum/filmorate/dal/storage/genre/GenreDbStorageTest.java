@@ -28,7 +28,7 @@ class GenreDbStorageTest {
         assertThat(genres)
                 .isNotNull()
                 .isNotEmpty()
-                .hasSize(2);
+                .hasSize(6);
     }
 
     @Test
