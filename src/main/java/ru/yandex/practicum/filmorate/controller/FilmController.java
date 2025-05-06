@@ -6,6 +6,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dal.dto.FilmDto;
+import ru.yandex.practicum.filmorate.dal.dto.NewFilmDto;
+import ru.yandex.practicum.filmorate.dal.dto.ResponseFilmDto;
+import ru.yandex.practicum.filmorate.dal.dto.ResponseFilmDetailDto;
 import ru.yandex.practicum.filmorate.service.FilmLikesService;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -23,34 +26,32 @@ public class FilmController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public List<FilmDto> findAll() {
+    public List<ResponseFilmDto> findAll() {
         return filmService.getAll();
     }
 
     @GetMapping("/{filmId}")
     @ResponseStatus(HttpStatus.OK)
-    public FilmDto findById(@PathVariable @Min(1) long filmId) {
+    public ResponseFilmDetailDto findById(@PathVariable @Min(1) long filmId) {
         return filmService.getById(filmId);
     }
 
     @GetMapping("/popular")
     @ResponseStatus(HttpStatus.OK)
-    public List<FilmDto> findPopularFilmsByCount(@RequestParam(defaultValue = "10") long count) {
+    public List<ResponseFilmDto> findPopularFilmsByCount(@RequestParam(defaultValue = "10") long count) {
         return filmService.getPopularFilmsByCount(count);
     }
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public FilmDto create(@Validated @RequestBody FilmDto newFilm) {
+    public ResponseFilmDto create(@Validated @RequestBody NewFilmDto newFilm) {
         return filmService.create(newFilm);
     }
 
-    @PutMapping("/{filmId}")
+    @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    public FilmDto update(
-            @PathVariable long filmId,
-            @Validated @RequestBody FilmDto newFilm) {
-        return filmService.update(filmId, newFilm);
+    public ResponseFilmDto update(@Validated @RequestBody FilmDto newFilm) {
+        return filmService.update(newFilm);
     }
 
     @PutMapping("/{filmId}/like/{userId}")

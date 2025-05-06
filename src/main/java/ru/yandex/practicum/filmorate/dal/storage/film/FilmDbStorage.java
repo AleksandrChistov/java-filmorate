@@ -38,7 +38,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
                 newFilm.getDescription(),
                 newFilm.getReleaseDate(),
                 newFilm.getDuration(),
-                newFilm.getMpaId()
+                newFilm.getMpa().getId()
         );
         newFilm.setId(id);
         return newFilm;
@@ -52,7 +52,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
                 updatedFilm.getDescription(),
                 updatedFilm.getReleaseDate(),
                 updatedFilm.getDuration(),
-                updatedFilm.getMpaId(),
+                updatedFilm.getMpa().getId(),
                 updatedFilm.getId()
         );
         return updatedFilm;

@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.excepton.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.GenreMapper;
 
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -18,6 +19,11 @@ public class GenreService {
 
     public GenreService(@Qualifier("genreDbStorage") GenreStorage genreStorage) {
         this.genreStorage = genreStorage;
+    }
+
+    public int addGenresByFilmId(Set<Long> genresIds, long filmId) {
+        genresIds.forEach(this::getById);
+        return genreStorage.addGenresByFilmId(genresIds, filmId);
     }
 
     public List<GenreDto> getAll() {

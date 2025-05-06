@@ -12,7 +12,7 @@ import java.util.List;
 public class FriendshipDbStorage extends BaseDbStorage<Friendship> implements FriendshipStorage {
     private static final String INSERT_FRIEND_QUERY = "INSERT INTO friendship (user_id, friend_id) VALUES (?, ?)";
     private static final String DELETE_FRIEND_QUERY = "DELETE FROM friendship WHERE user_id = ? AND friend_id = ?";
-    private static final String FIND_ALL_BY_USER_ID_QUERY = "SELECT * FROM friendship WHERE user_id = ?";
+    private static final String FIND_ALL_BY_USER_ID_QUERY = "SELECT user_id, friend_id FROM friendship WHERE user_id = ?";
 
     public FriendshipDbStorage(JdbcTemplate jdbc, RowMapper<Friendship> mapper) {
         super(jdbc, mapper);

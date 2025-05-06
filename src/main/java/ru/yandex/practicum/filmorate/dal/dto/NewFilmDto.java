@@ -13,8 +13,7 @@ import java.util.Set;
 
 @Data
 @AllArgsConstructor
-public class FilmDto {
-    private long id;
+public class NewFilmDto {
     @NotBlank
     private String name;
     @NotBlank

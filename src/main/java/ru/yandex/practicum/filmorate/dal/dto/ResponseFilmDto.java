@@ -9,11 +9,11 @@ import lombok.Data;
 import ru.yandex.practicum.filmorate.validation.ReleaseDate;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class FilmDto {
+public class ResponseFilmDto {
     private long id;
     @NotBlank
     private String name;
@@ -27,5 +27,6 @@ public class FilmDto {
     private Integer duration;
     @NotNull
     private MpaIdDto mpa;
-    private Set<GenreIdDto> genres;
+    @NotNull
+    private List<GenreIdDto> genres;
 }

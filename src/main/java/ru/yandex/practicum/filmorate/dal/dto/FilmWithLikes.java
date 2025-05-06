@@ -13,7 +13,7 @@ import java.util.Set;
 
 @Data
 @AllArgsConstructor
-public class FilmDto {
+public class FilmWithLikes {
     private long id;
     @NotBlank
     private String name;
@@ -27,5 +27,7 @@ public class FilmDto {
     private Integer duration;
     @NotNull
     private MpaIdDto mpa;
+    @NotNull
     private Set<GenreIdDto> genres;
+    private Set<Long> likes;
 }

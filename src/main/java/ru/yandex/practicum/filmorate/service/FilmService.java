@@ -3,8 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dal.dto.FilmDto;
-import ru.yandex.practicum.filmorate.dal.dto.GenreDto;
+import ru.yandex.practicum.filmorate.dal.dto.*;
 import ru.yandex.practicum.filmorate.dal.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.excepton.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
@@ -21,47 +20,58 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final GenreService genreService;
     private final FilmLikesService filmLikesService;
+    private final MpaService mpaService;
 
     public FilmService(
             @Qualifier("filmDbStorage") FilmStorage filmStorage,
-            GenreService genreService, FilmLikesService filmLikesService
+            GenreService genreService, FilmLikesService filmLikesService, MpaService mpaService
     ) {
         this.filmStorage = filmStorage;
         this.genreService = genreService;
         this.filmLikesService = filmLikesService;
+        this.mpaService = mpaService;
     }
 
-    public List<FilmDto> getAll() {
+    public List<ResponseFilmDto> getAll() {
         return filmStorage.getAll().stream()
                 .map(this::mapToFilmDto)
                 .collect(Collectors.toList());
     }
 
-    public FilmDto getById(long filmId) {
+    public ResponseFilmDetailDto getById(long filmId) {
         return filmStorage.getById(filmId)
-                .map(this::mapToFilmDto)
+                .map(this::mapToFilmWithNamesDto)
                 .orElseThrow(() -> new NotFoundException("Фильма с id = " + filmId + " не найден."));
     }
 
-    public FilmDto create(FilmDto newFilm) {
+    public ResponseFilmDto create(NewFilmDto newFilm) {
         log.info("Добавление нового фильма с названием = {}", newFilm.getName());
 
-        Film film = FilmMapper.mapToFilm(newFilm);
+        MpaDto mpaDto = mpaService.getById(newFilm.getMpa().getId());
+
+        Film film = FilmMapper.mapNewToFilm(newFilm, mpaDto);
         film = filmStorage.add(film);
 
         log.info("Фильм успешно добавлен, id = {}", film.getId());
 
+        if (newFilm.getGenres() != null) {
+            Set<Long> genresIds = newFilm.getGenres().stream().map(GenreIdDto::getId).collect(Collectors.toSet());
+            genreService.addGenresByFilmId(genresIds, film.getId());
+        }
+
         return mapToFilmDto(film);
     }
 
-    public FilmDto update(long filmId, FilmDto newFilm) {
-        log.info("Обновление фильма с id = {}", filmId);
+    public ResponseFilmDto update(FilmDto newFilm) {
+        log.info("Обновление фильма с id = {}", newFilm.getId());
 
-        Film updatedFilm = filmStorage.getById(filmId)
-                .map(u -> FilmMapper.mapToFilm(newFilm))
-                .orElseThrow(() -> new NotFoundException("Фильм с id = " + filmId + " не найден."));
+        MpaDto mpaDto = mpaService.getById(newFilm.getMpa().getId());
 
-        updatedFilm.setId(filmId);
+        Film updatedFilm = filmStorage.getById(newFilm.getId())
+                .map(u -> FilmMapper.mapToFilm(newFilm, mpaDto))
+                .orElseThrow(() -> new NotFoundException("Фильм с id = " + newFilm.getId() + " не найден."));
+
+        updatedFilm.setId(newFilm.getId());
 
         updatedFilm = filmStorage.update(updatedFilm);
 
@@ -74,18 +84,29 @@ public class FilmService {
         return filmStorage.delete(filmId);
     }
 
-    public List<FilmDto> getPopularFilmsByCount(long count) {
+    public List<ResponseFilmDto> getPopularFilmsByCount(long count) {
         log.info("Получение списка популярных фильмов в количестве {}", count);
         return filmStorage.getAll().stream()
-                .map(this::mapToFilmDto)
-                .sorted(Comparator.comparingInt((FilmDto dto) -> dto.getLikesIds().size()).reversed())
+                .map(this::mapToFilmDtoWithLikes)
+                .sorted(Comparator.comparingInt((FilmWithLikes dto) -> dto.getLikes().size()).reversed())
+                .map(FilmMapper::mapWithLikesToFilmDto)
                 .limit(count)
                 .collect(Collectors.toList());
     }
 
-    private FilmDto mapToFilmDto(Film film) {
+    private ResponseFilmDto mapToFilmDto(Film film) {
+        List<GenreDto> genreDtos = genreService.getAllByFilmId(film.getId());
+        return FilmMapper.mapToFilmDto(film, genreDtos);
+    }
+
+    private ResponseFilmDetailDto mapToFilmWithNamesDto(Film film) {
+        List<GenreDto> genreDtos = genreService.getAllByFilmId(film.getId());
+        return FilmMapper.mapToFilmWithNamesDto(film, genreDtos);
+    }
+
+    private FilmWithLikes mapToFilmDtoWithLikes(Film film) {
         List<GenreDto> genreDtos = genreService.getAllByFilmId(film.getId());
         Set<Long> likes = filmLikesService.getLikesByFilmId(film.getId());
-        return FilmMapper.mapToFilmDto(film, genreDtos, likes);
+        return FilmMapper.mapToFilmWithLikes(film, genreDtos, likes);
     }
 }

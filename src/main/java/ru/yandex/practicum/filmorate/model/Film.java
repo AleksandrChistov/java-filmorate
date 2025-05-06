@@ -8,6 +8,8 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
+import ru.yandex.practicum.filmorate.dal.dto.GenreIdDto;
+import ru.yandex.practicum.filmorate.dal.dto.MpaDto;
 import ru.yandex.practicum.filmorate.validation.Group;
 import ru.yandex.practicum.filmorate.validation.ReleaseDate;
 
@@ -31,25 +33,25 @@ public class Film {
     @Positive(groups = {Group.OnCreate.class, Group.OnUpdate.class})
     private int duration;
     @NotNull
-    private long mpaId;
+    private MpaDto mpa;
     @Getter(AccessLevel.NONE)
-    private final Set<Long> genresIds = new HashSet<>();
+    private final Set<GenreIdDto> genresIds = new HashSet<>();
     @Getter(AccessLevel.NONE)
     private final Set<Long> likesIds = new HashSet<>();
 
     public void addGenre(long genreId) {
-        genresIds.add(genreId);
+        genresIds.add(new GenreIdDto(genreId));
     }
 
-    public void addGenres(Set<Long> newGenresIds) {
+    public void addGenres(Set<GenreIdDto> newGenresIds) {
         genresIds.addAll(newGenresIds);
     }
 
     public void removeGenre(long genreId) {
-        genresIds.remove(genreId);
+        genresIds.remove(new GenreIdDto(genreId));
     }
 
-    public Set<Long> getGenresIds() {
+    public Set<GenreIdDto> getGenres() {
         return new HashSet<>(genresIds);
     }
 

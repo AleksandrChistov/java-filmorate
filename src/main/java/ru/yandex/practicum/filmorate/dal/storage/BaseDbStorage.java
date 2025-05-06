@@ -30,7 +30,7 @@ public class BaseDbStorage<T> {
         return jdbc.query(query, mapper, params);
     }
 
-    public boolean delete(String query, Object... params) {
+    protected boolean delete(String query, Object... params) {
         int rowsDeleted = jdbc.update(query, params);
         return rowsDeleted > 0;
     }

@@ -11,13 +11,11 @@ import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
-public class UserDto {
-    @NotNull
-    public Long id;
-    private String name;
+public class NewUserDto {
     @NotBlank
     private String login;
     @NotBlank
+    private String name;
     @Email
     private String email;
     @NotNull

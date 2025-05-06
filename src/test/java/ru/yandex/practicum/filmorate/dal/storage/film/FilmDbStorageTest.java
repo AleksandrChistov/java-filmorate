@@ -6,11 +6,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
 import org.springframework.context.annotation.Import;
+import ru.yandex.practicum.filmorate.dal.dto.MpaDto;
 import ru.yandex.practicum.filmorate.dal.mapper.FilmLikesRowMapper;
 import ru.yandex.practicum.filmorate.dal.mapper.FilmRowMapper;
 import ru.yandex.practicum.filmorate.dal.mapper.GenreRowMapper;
 import ru.yandex.practicum.filmorate.dal.storage.filmLikes.FilmLikesDbStorage;
 import ru.yandex.practicum.filmorate.dal.storage.genre.GenreDbStorage;
+import ru.yandex.practicum.filmorate.enums.RatingMPA;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.FilmLikes;
 import ru.yandex.practicum.filmorate.model.Genre;
@@ -34,7 +36,7 @@ class FilmDbStorageTest {
     @Test
     void add() {
         Film addedFilm = new Film(null, "Хомяк Байт", "Фильм про хомяка",
-                LocalDate.of(2025, Month.DECEMBER, 1), 90, 1L);
+                LocalDate.of(2025, Month.DECEMBER, 1), 90, new MpaDto(1L, RatingMPA.G.getTitle()));
         Film added = filmStorage.add(addedFilm);
 
         assertThat(added).isNotNull().hasFieldOrPropertyWithValue("id", 4L);
@@ -51,7 +53,7 @@ class FilmDbStorageTest {
     @Test
     void update() {
         LocalDate expectedNewReleaseDate = LocalDate.of(2026, Month.FEBRUARY, 20);
-        Film updatedFilm = new Film(1L, "Дурак", "Фильм про дурака", expectedNewReleaseDate, 120, 1L);
+        Film updatedFilm = new Film(1L, "Дурак", "Фильм про дурака", expectedNewReleaseDate, 120, new MpaDto(1L, RatingMPA.G.getTitle()));
 
         filmStorage.update(updatedFilm);
 

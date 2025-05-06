@@ -3,6 +3,7 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
+import ru.yandex.practicum.filmorate.dal.dto.NewUserDto;
 import ru.yandex.practicum.filmorate.excepton.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
@@ -39,16 +40,20 @@ public class UserService {
     public List<UserDto> getFriends(long userId) {
         log.info("Получение всех друзей пользователя {}", userId);
 
+        findUser(userId);
+
         return userStorage.getFriends(userId).stream()
                 .map(UserMapper::mapToUserDto)
                 .collect(Collectors.toList());
     }
 
-    public UserDto create(UserDto newUser) {
+    public UserDto create(NewUserDto newUser) {
         log.info("Добавление нового пользователя");
 
-        setLoginIfNameIsBlank(newUser);
-        User user = UserMapper.mapToUser(newUser);
+        User user = UserMapper.mapNewToUser(newUser);
+
+        setLoginIfNameIsBlank(user);
+
         user = userStorage.add(user);
 
         log.info("Пользователь успешно добавлен, id = {}", user.getId());
@@ -56,16 +61,16 @@ public class UserService {
         return UserMapper.mapToUserDto(user);
     }
 
-    public UserDto update(long userId, UserDto newUser) {
-        log.info("Обновление пользователя с id = {}", userId);
+    public UserDto update(UserDto newUser) {
+        log.info("Обновление пользователя с id = {}", newUser.getId());
 
-        setLoginIfNameIsBlank(newUser);
-
-        User updatedUser = userStorage.getById(userId)
+        User updatedUser = userStorage.getById(newUser.getId())
                 .map(u -> UserMapper.mapToUser(newUser))
-                .orElseThrow(() -> new NotFoundException("Пользователь с id = " + userId + " не найден."));
+                .orElseThrow(() -> new NotFoundException("Пользователь с id = " + newUser.getId() + " не найден."));
 
-        updatedUser.setId(userId);
+        setLoginIfNameIsBlank(updatedUser);
+
+        updatedUser.setId(newUser.getId());
 
         updatedUser = userStorage.update(updatedUser);
 
@@ -80,12 +85,19 @@ public class UserService {
 
     public void addFriend(long userId, long friendId) {
         log.info("Добавление в друзья пользователя с ID = {}", friendId);
+        findUser(userId);
+        findUser(friendId);
+
         friendshipStorage.addFriend(userId, friendId);
         log.info("Пользователь с ID = {} был добавлен в друзья", friendId);
     }
 
     public boolean deleteFriend(long userId, long friendId) {
         log.info("Удаление из друзей пользователя с ID {}", friendId);
+
+        findUser(userId);
+        findUser(friendId);
+
         boolean isDeleted = friendshipStorage.deleteFriend(userId, friendId);
         if (isDeleted) {
             log.info("Пользователь с ID = {} был удален из друзей", friendId);
@@ -101,7 +113,7 @@ public class UserService {
                 .collect(Collectors.toList());
     }
 
-    private static void setLoginIfNameIsBlank(UserDto newUser) {
+    private static void setLoginIfNameIsBlank(User newUser) {
         if (newUser.getName() == null || newUser.getName().isBlank()) {
             newUser.setName(newUser.getLogin());
             log.debug("Имя пользователя не заполнено, поэтому был присвоен логин вместо имени = {}", newUser.getName());

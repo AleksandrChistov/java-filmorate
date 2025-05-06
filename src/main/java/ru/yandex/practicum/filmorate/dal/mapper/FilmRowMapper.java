@@ -2,6 +2,7 @@ package ru.yandex.practicum.filmorate.dal.mapper;
 
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
+import ru.yandex.practicum.filmorate.dal.dto.MpaDto;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.sql.ResultSet;
@@ -17,7 +18,7 @@ public class FilmRowMapper implements RowMapper<Film> {
                 rs.getString("description"),
                 rs.getDate("release_date").toLocalDate(),
                 rs.getInt("duration"),
-                rs.getLong("mpa_id")
+                new MpaDto(rs.getLong("mpa_id"), rs.getString("mpa_name"))
         );
     }
 }
