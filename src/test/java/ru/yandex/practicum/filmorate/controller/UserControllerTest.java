@@ -14,9 +14,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import ru.yandex.practicum.filmorate.dal.dto.NewUserDto;
 import ru.yandex.practicum.filmorate.dal.dto.UserDto;
-import ru.yandex.practicum.filmorate.dal.mapper.FriendshipRowMapper;
 import ru.yandex.practicum.filmorate.dal.mapper.UserRowMapper;
-import ru.yandex.practicum.filmorate.dal.storage.friendship.FriendshipDbStorage;
 import ru.yandex.practicum.filmorate.dal.storage.user.UserDbStorage;
 import ru.yandex.practicum.filmorate.excepton.NotFoundException;
 
@@ -30,7 +28,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@Import({UserDbStorage.class, UserRowMapper.class, FriendshipDbStorage.class, FriendshipRowMapper.class})
+@Import({UserDbStorage.class, UserRowMapper.class})
 class UserControllerTest {
     @Autowired
     private MockMvc mockMvc;

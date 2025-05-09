@@ -8,10 +8,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Import;
 import ru.yandex.practicum.filmorate.dal.mapper.FilmRowMapper;
-import ru.yandex.practicum.filmorate.dal.mapper.FriendshipRowMapper;
 import ru.yandex.practicum.filmorate.dal.mapper.UserRowMapper;
 import ru.yandex.practicum.filmorate.dal.storage.film.FilmDbStorage;
-import ru.yandex.practicum.filmorate.dal.storage.friendship.FriendshipDbStorage;
 import ru.yandex.practicum.filmorate.dal.storage.user.UserDbStorage;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -19,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 @SpringBootTest
 @AutoConfigureTestDatabase
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
-@Import({UserDbStorage.class, UserRowMapper.class, FriendshipDbStorage.class, FriendshipRowMapper.class, FilmDbStorage.class, FilmRowMapper.class})
+@Import({UserDbStorage.class, UserRowMapper.class, FilmDbStorage.class, FilmRowMapper.class})
 class FilmorateApplicationTests {
 
 	@Test

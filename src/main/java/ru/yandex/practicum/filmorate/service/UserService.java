@@ -4,12 +4,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.dto.NewUserDto;
+import ru.yandex.practicum.filmorate.dal.dto.UserDto;
+import ru.yandex.practicum.filmorate.dal.storage.user.UserStorage;
 import ru.yandex.practicum.filmorate.excepton.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
 import ru.yandex.practicum.filmorate.model.User;
-import ru.yandex.practicum.filmorate.dal.storage.friendship.FriendshipStorage;
-import ru.yandex.practicum.filmorate.dal.storage.user.UserStorage;
-import ru.yandex.practicum.filmorate.dal.dto.UserDto;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -18,13 +17,9 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserService {
     private final UserStorage userStorage;
-    private final FriendshipStorage friendshipStorage;
 
-    public UserService(
-            @Qualifier("userDbStorage") UserStorage userStorage,
-            @Qualifier("friendshipDbStorage") FriendshipStorage friendshipStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
         this.userStorage = userStorage;
-        this.friendshipStorage = friendshipStorage;
     }
 
     public List<UserDto> getAll() {
@@ -88,7 +83,7 @@ public class UserService {
         findUser(userId);
         findUser(friendId);
 
-        friendshipStorage.addFriend(userId, friendId);
+        userStorage.addFriend(userId, friendId);
         log.info("Пользователь с ID = {} был добавлен в друзья", friendId);
     }
 
@@ -98,7 +93,7 @@ public class UserService {
         findUser(userId);
         findUser(friendId);
 
-        boolean isDeleted = friendshipStorage.deleteFriend(userId, friendId);
+        boolean isDeleted = userStorage.deleteFriend(userId, friendId);
         if (isDeleted) {
             log.info("Пользователь с ID = {} был удален из друзей", friendId);
         }
