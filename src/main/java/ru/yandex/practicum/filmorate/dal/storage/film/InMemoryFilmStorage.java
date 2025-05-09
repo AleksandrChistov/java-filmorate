@@ -6,6 +6,7 @@ import ru.yandex.practicum.filmorate.excepton.NotFoundException;
 import ru.yandex.practicum.filmorate.model.Film;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static ru.yandex.practicum.filmorate.util.CommonUtil.getNextId;
 
@@ -56,5 +57,61 @@ public class InMemoryFilmStorage implements FilmStorage {
             throw new NotFoundException("Фильм с id = {} не найден.");
         }
         return Optional.ofNullable(films.get(id));
+    }
+
+    @Override
+    public List<Film> getPopularFilmsByCount(int count) {
+        return getAll().stream()
+                .sorted(Comparator.comparingInt((Film film) -> film.getLikesIds().size()).reversed())
+                .limit(count)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Map<Long, List<Long>> getLikesByFilmIds(List<Long> filmIds) {
+        Map<Long, List<Long>> filmIdLikesMap = new HashMap<>();
+
+        filmIds.forEach(filmId -> {
+            List<Long> likes = getLikesByFilmId(filmId);
+            filmIdLikesMap.put(filmId, likes);
+        });
+
+        return filmIdLikesMap;
+    }
+
+    @Override
+    public List<Long> getLikesByFilmId(long filmId) {
+        log.info("Получение списка лайков по фильму с ID: {}", filmId);
+        Film film = films.get(filmId);
+        if (film == null) {
+            throw new NotFoundException("Фильм не найден с ID = " + filmId);
+        }
+        return new ArrayList<>(film.getLikesIds());
+    }
+
+    @Override
+    public void addLike(long filmId, long userId) {
+        log.info("Добавление лайка пользователем {} к фильму {}", userId, filmId);
+        Film film = films.get(filmId);
+        if (film == null) {
+            throw new NotFoundException("Фильм не найден с ID = " + filmId);
+        }
+        Set<Long> likes = film.getLikesIds();
+        likes.add(userId);
+        log.info("Лайк успешно добавлен");
+    }
+
+    @Override
+    public boolean deleteLike(long filmId, long userId) {
+        log.info("Удаление лайка пользователем {} из фильма {}", userId, filmId);
+        Film film = films.get(filmId);
+        if (film == null) {
+            throw new NotFoundException("Фильм не найден с ID = " + filmId);
+        }
+        boolean isDeleted = film.getLikesIds().remove(userId);
+        if (isDeleted) {
+            log.info("Лайк успешно удален");
+        }
+        return isDeleted;
     }
 }

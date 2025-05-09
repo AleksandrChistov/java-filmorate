@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import ru.yandex.practicum.filmorate.validation.ReleaseDate;
 
 import java.time.LocalDate;
@@ -13,8 +14,9 @@ import java.util.Set;
 
 @Data
 @AllArgsConstructor
+@EqualsAndHashCode(of = "id")
 public class FilmDto {
-    private long id;
+    private Long id;
     @NotBlank
     private String name;
     @NotBlank
@@ -26,6 +28,6 @@ public class FilmDto {
     @Positive
     private Integer duration;
     @NotNull
-    private MpaIdDto mpa;
-    private Set<GenreIdDto> genres;
+    private MpaDto mpa;
+    private Set<GenreDto> genres;
 }

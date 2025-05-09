@@ -7,8 +7,10 @@ import ru.yandex.practicum.filmorate.dal.dto.GenreDto;
 import ru.yandex.practicum.filmorate.dal.storage.genre.GenreStorage;
 import ru.yandex.practicum.filmorate.excepton.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.GenreMapper;
+import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -38,9 +40,13 @@ public class GenreService {
                 .orElseThrow(() -> new NotFoundException("Жанр с id = " + genreId + " не найден."));
     }
 
-    public List<GenreDto> getAllByFilmId(long filmId) {
+    public Map<Long, Set<Genre>> getAllByFilmIds(List<Long> filmIds) {
+        return genreStorage.getAllByFilmIds(filmIds);
+    }
+
+    public Set<GenreDto> getAllByFilmId(long filmId) {
         return genreStorage.getAllByFilmId(filmId).stream()
                 .map(GenreMapper::mapToGenreDto)
-                .collect(Collectors.toList());
+                .collect(Collectors.toSet());
     }
 }

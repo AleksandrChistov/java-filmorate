@@ -6,27 +6,30 @@ import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import ru.yandex.practicum.filmorate.validation.ReleaseDate;
 
 import java.time.LocalDate;
-import java.util.List;
+import java.util.Set;
 
 @Data
+@RequiredArgsConstructor
 @AllArgsConstructor
 public class ResponseFilmDto {
     private long id;
     @NotBlank
-    private String name;
+    private final String name;
     @NotBlank
     @Size(max = 200)
-    private String description;
+    private final String description;
     @ReleaseDate
-    private LocalDate releaseDate;
+    private final LocalDate releaseDate;
     @NotNull
     @Positive
-    private Integer duration;
+    private final Integer duration;
     @NotNull
-    private MpaIdDto mpa;
+    private final MpaDto mpa;
     @NotNull
-    private List<GenreIdDto> genres;
+    private final Set<GenreDto> genres;
+    private final Set<Long> likes;
 }
