@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 @AllArgsConstructor
 public class User {
     @NotNull(groups = Group.OnUpdate.class)
-    public Integer id;
+    public Long id;
     private String name;
     @NotBlank(groups = {Group.OnCreate.class, Group.OnUpdate.class})
     private String login;
@@ -30,21 +30,21 @@ public class User {
     @Past(groups = {Group.OnCreate.class, Group.OnUpdate.class})
     private LocalDate birthday;
     @Getter(AccessLevel.NONE)
-    private final Set<Integer> friendsIds = new HashSet<>();
+    private final Set<Long> friendsIds = new HashSet<>();
 
-    public void addFiend(int userId) {
+    public void addFriend(long userId) {
         friendsIds.add(userId);
     }
 
-    public void removeFriend(int userId) {
+    public void removeFriend(long userId) {
         friendsIds.remove(userId);
     }
 
-    public Set<Integer> getFriendsIdsCopy() {
+    public Set<Long> getFriendsIdsCopy() {
         return new HashSet<>(friendsIds);
     }
 
-    public Stream<Integer> getFriendsIdsStream() {
+    public Stream<Long> getFriendsIdsStream() {
         return friendsIds.stream();
     }
 }
