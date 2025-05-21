@@ -21,8 +21,11 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
     private static final String DELETE_FRIEND_QUERY = "DELETE FROM friendship WHERE user_id = ? AND friend_id = ?";
     private static final String FIND_ALL_BY_USER_ID_QUERY = "SELECT friend_id FROM friendship WHERE user_id = ?";
 
-    public UserDbStorage(JdbcTemplate jdbc, RowMapper<User> mapper) {
-        super(jdbc, mapper);
+    private final RowMapper<User> userMapper;
+
+    public UserDbStorage(JdbcTemplate jdbc, RowMapper<User> userMapper) {
+        super(jdbc);
+        this.userMapper = userMapper;
     }
 
     @Override
@@ -58,12 +61,12 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
 
     @Override
     public List<User> getAll() {
-        return findMany(FIND_ALL_USERS_QUERY);
+        return findMany(FIND_ALL_USERS_QUERY, userMapper);
     }
 
     @Override
     public Optional<User> getById(long userId) {
-        return findOne(FIND_USER_BY_ID_QUERY, userId);
+        return findOne(FIND_USER_BY_ID_QUERY, userMapper, userId);
     }
 
     @Override
