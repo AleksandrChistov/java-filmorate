@@ -29,8 +29,11 @@ public class GenreDbStorage extends BaseDbStorage<Genre> implements GenreStorage
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
+    private final RowMapper<Genre> mapper;
+
     public GenreDbStorage(JdbcTemplate jdbc, RowMapper<Genre> mapper, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        super(jdbc, mapper);
+        super(jdbc);
+        this.mapper = mapper;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
@@ -50,12 +53,12 @@ public class GenreDbStorage extends BaseDbStorage<Genre> implements GenreStorage
 
     @Override
     public List<Genre> getAll() {
-        return findMany(FIND_ALL_GENRES_QUERY);
+        return findMany(FIND_ALL_GENRES_QUERY, mapper);
     }
 
     @Override
     public Optional<Genre> getById(long filmId) {
-        return findOne(FIND_GENRE_BY_ID_QUERY, filmId);
+        return findOne(FIND_GENRE_BY_ID_QUERY, mapper, filmId);
     }
 
     @Override
@@ -77,6 +80,6 @@ public class GenreDbStorage extends BaseDbStorage<Genre> implements GenreStorage
 
     @Override
     public List<Genre> getAllByFilmId(long filmsId) {
-        return findMany(FIND_GENRES_BY_FILM_ID_QUERY, filmsId);
+        return findMany(FIND_GENRES_BY_FILM_ID_QUERY, mapper, filmsId);
     }
 }

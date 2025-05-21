@@ -45,19 +45,22 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
+    private final RowMapper<Film> mapper;
+
     public FilmDbStorage(JdbcTemplate jdbc, RowMapper<Film> mapper, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
-        super(jdbc, mapper);
+        super(jdbc);
+        this.mapper = mapper;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
     }
 
     @Override
     public List<Film> getAll() {
-        return findMany(FIND_ALL_FILMS_WITH_MPA_QUERY);
+        return findMany(FIND_ALL_FILMS_WITH_MPA_QUERY, mapper);
     }
 
     @Override
     public List<Film> getPopularFilmsByCount(int count) {
-        return findMany(FIND_POPULAR_FILMS_BY_COUNT_QUERY, count);
+        return findMany(FIND_POPULAR_FILMS_BY_COUNT_QUERY, mapper, count);
     }
 
     @Override
@@ -95,7 +98,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
 
     @Override
     public Optional<Film> getById(long filmId) {
-        return findOne(FIND_FILM_WITH_MPA_BY_ID_QUERY, filmId);
+        return findOne(FIND_FILM_WITH_MPA_BY_ID_QUERY, mapper, filmId);
     }
 
     @Override
