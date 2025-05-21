@@ -133,4 +133,10 @@ public class FilmService {
             return FilmMapper.mapToFilmDto(film);
         }).collect(Collectors.toList());
     }
+
+    public List<ResponseFilmDto> findPopularFilmsByGenreForYear(int limit, long genreId, long year) {
+        log.info("Получение списка популярных фильмов {} года в жанре {},  в количестве {}", year, genreId, limit);
+        List<Film> films = filmStorage.findPopularFilmsByGenreForYear(limit, genreId, year);
+        return mapToFilmsDtos(films);
+    }
 }

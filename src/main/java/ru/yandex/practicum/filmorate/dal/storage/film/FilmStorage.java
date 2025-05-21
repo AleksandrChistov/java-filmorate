@@ -1,5 +1,7 @@
 package ru.yandex.practicum.filmorate.dal.storage.film;
 
+import ru.yandex.practicum.filmorate.dal.dto.FilmDto;
+import ru.yandex.practicum.filmorate.dal.dto.ResponseFilmDto;
 import ru.yandex.practicum.filmorate.dal.storage.Storage;
 import ru.yandex.practicum.filmorate.model.Film;
 
@@ -16,4 +18,6 @@ public interface FilmStorage extends Storage<Film> {
     void addLike(long filmId, long userId);
 
     boolean deleteLike(long filmId, long userId);
+
+    public List<Film> findPopularFilmsByGenreForYear(int limit, long genreId, long year);
 }
