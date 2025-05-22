@@ -38,7 +38,7 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             "GROUP BY f.id " +
             "ORDER BY likes_count DESC " +
             "LIMIT ?";
-    private static final String FIND_POPULAR_FILMS_BY_GENRE_FOR_YEAR_QUERY = "SELECT " +
+    private static final String FIND_POPULAR_FILMS_BY_GENRE_BY_YEAR_QUERY = "SELECT " +
             "f.id, f.name, f.description, f.release_date, f.duration, " +
             "mpa.id AS mpa_id, mpa.name AS mpa_name, " +
             "COUNT(fl.film_id) AS likes_count " +
@@ -48,6 +48,30 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             "LEFT JOIN films_genres fg ON f.id = fg.film_id " +
             "WHERE fg.genre_id = ? " +
             "AND EXTRACT(YEAR FROM f.release_date) = ? " +
+            "GROUP BY f.id " +
+            "ORDER BY likes_count DESC " +
+            "LIMIT ?";
+    private static final String FIND_POPULAR_FILMS_BY_GENRE_QUERY = "SELECT " +
+            "f.id, f.name, f.description, f.release_date, f.duration, " +
+            "mpa.id AS mpa_id, mpa.name AS mpa_name, " +
+            "COUNT(fl.film_id) AS likes_count " +
+            "FROM films f " +
+            "LEFT JOIN mpa ON mpa.id = f.mpa_id " +
+            "LEFT JOIN films_likes fl ON f.id = fl.film_id " +
+            "LEFT JOIN films_genres fg ON f.id = fg.film_id " +
+            "WHERE fg.genre_id = ? " +
+            "GROUP BY f.id " +
+            "ORDER BY likes_count DESC " +
+            "LIMIT ?";
+    private static final String FIND_POPULAR_FILMS_BY_YEAR_QUERY = "SELECT " +
+            "f.id, f.name, f.description, f.release_date, f.duration, " +
+            "mpa.id AS mpa_id, mpa.name AS mpa_name, " +
+            "COUNT(fl.film_id) AS likes_count " +
+            "FROM films f " +
+            "LEFT JOIN mpa ON mpa.id = f.mpa_id " +
+            "LEFT JOIN films_likes fl ON f.id = fl.film_id " +
+            "LEFT JOIN films_genres fg ON f.id = fg.film_id " +
+            "WHERE EXTRACT(YEAR FROM f.release_date) = ? " +
             "GROUP BY f.id " +
             "ORDER BY likes_count DESC " +
             "LIMIT ?";
@@ -69,11 +93,6 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     @Override
     public List<Film> getAll() {
         return findMany(FIND_ALL_FILMS_WITH_MPA_QUERY, mapper);
-    }
-
-    @Override
-    public List<Film> getPopularFilmsByCount(int count) {
-        return findMany(FIND_POPULAR_FILMS_BY_COUNT_QUERY, mapper, count);
     }
 
     @Override
@@ -147,7 +166,22 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     }
 
     @Override
-    public List<Film> findPopularFilmsByGenreForYear(int limit, long genreId, long year) {
-        return findMany(FIND_POPULAR_FILMS_BY_GENRE_FOR_YEAR_QUERY, mapper, genreId, year, limit);
+    public List<Film> getPopularFilmsByCount(int count) {
+        return findMany(FIND_POPULAR_FILMS_BY_COUNT_QUERY, mapper, count);
+    }
+
+    @Override
+    public List<Film> findPopularFilmsByGenreByYear(int count, Long genreId, Long year) {
+        return findMany(FIND_POPULAR_FILMS_BY_GENRE_BY_YEAR_QUERY, mapper, genreId, year, count);
+    }
+
+    @Override
+    public List<Film> findPopularFilmsByGenre(int count, Long genreId) {
+        return findMany(FIND_POPULAR_FILMS_BY_GENRE_QUERY, mapper, genreId, count);
+    }
+
+    @Override
+    public List<Film> findPopularFilmsByYear(int count, Long year) {
+        return findMany(FIND_POPULAR_FILMS_BY_YEAR_QUERY, mapper, year, count);
     }
 }
