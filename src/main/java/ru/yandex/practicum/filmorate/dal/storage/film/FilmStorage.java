@@ -16,4 +16,10 @@ public interface FilmStorage extends Storage<Film> {
     void addLike(long filmId, long userId);
 
     boolean deleteLike(long filmId, long userId);
+
+    public List<Film> findPopularFilmsByGenreByYear(int count, Long genreId, Long year);
+
+    public List<Film> findPopularFilmsByGenre(int count, Long genreId);
+
+    public List<Film> findPopularFilmsByYear(int count, Long year);
 }

@@ -83,12 +83,6 @@ public class FilmService {
         return filmStorage.delete(filmId);
     }
 
-    public List<ResponseFilmDto> getPopularFilmsByCount(int count) {
-        log.info("Получение списка популярных фильмов в количестве {}", count);
-        List<Film> films = filmStorage.getPopularFilmsByCount(count);
-        return mapToFilmsDtos(films);
-    }
-
     public void addLike(long filmId, long userId) {
         log.info("Добавление лайка пользователем {} к фильму {}", userId, filmId);
         filmStorage.addLike(filmId, userId);
@@ -132,5 +126,25 @@ public class FilmService {
 
             return FilmMapper.mapToFilmDto(film);
         }).collect(Collectors.toList());
+    }
+
+    public List<ResponseFilmDto> findPopularFilms(int count, Long genreId, Long year) {
+        if (genreId != null && year != null) {
+            log.info("Получение списка популярных фильмов {} года в жанре {}, в количестве {}", year, genreId, count);
+            List<Film> films = filmStorage.findPopularFilmsByGenreByYear(count, genreId, year);
+            return mapToFilmsDtos(films);
+        } else if (genreId != null) {
+            log.info("Получение списка популярных фильмов в жанре {}, в количестве {}", genreId, count);
+            List<Film> films = filmStorage.findPopularFilmsByGenre(count, genreId);
+            return mapToFilmsDtos(films);
+        } else if (year != null) {
+            log.info("Получение списка популярных фильмов {} года, в количестве {}", year, count);
+            List<Film> films = filmStorage.findPopularFilmsByYear(count, year);
+            return mapToFilmsDtos(films);
+        } else {
+            log.info("Получение списка популярных фильмов в количестве {}", count);
+            List<Film> films = filmStorage.getPopularFilmsByCount(count);
+            return mapToFilmsDtos(films);
+        }
     }
 }
