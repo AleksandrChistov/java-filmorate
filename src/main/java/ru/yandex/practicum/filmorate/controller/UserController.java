@@ -70,7 +70,7 @@ public class UserController {
 
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public boolean delete (@PathVariable @Min(1) long userId) {
+    public boolean delete(@PathVariable @Min(1) long userId) {
         return userService.delete(userId);
     }
 
