@@ -4,10 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.Getter;
+import lombok.*;
+import ru.yandex.practicum.filmorate.dal.dto.DirectorDto;
 import ru.yandex.practicum.filmorate.dal.dto.GenreDto;
 import ru.yandex.practicum.filmorate.dal.dto.MpaDto;
 import ru.yandex.practicum.filmorate.validation.ReleaseDate;
@@ -37,6 +35,7 @@ public class Film {
     private MpaDto mpa;
     @Getter(AccessLevel.NONE)
     private final Set<GenreDto> genres = new TreeSet<>(Comparator.comparing(GenreDto::getId));
+    private final Set<DirectorDto> directors = new TreeSet<>(Comparator.comparing(DirectorDto::getId));
     @Getter(AccessLevel.NONE)
     private final Set<Long> likesIds = new HashSet<>();
 
@@ -56,6 +55,16 @@ public class Film {
         Set<GenreDto> genreDtos = new TreeSet<>(Comparator.comparing(GenreDto::getId));
         genreDtos.addAll(genres);
         return genreDtos;
+    }
+
+    public void addDirectors(Set<DirectorDto> newDirectrosIds) {
+        directors.addAll(newDirectrosIds);
+    }
+
+    public Set<DirectorDto> getDirectors() {
+        Set<DirectorDto> directorDtos = new TreeSet<>(Comparator.comparing(DirectorDto::getId));
+        directorDtos.addAll(directors);
+        return directorDtos;
     }
 
     public void addLike(long userId) {

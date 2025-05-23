@@ -24,6 +24,10 @@ public class FilmMapper {
             film.addGenres(filmDto.getGenres());
         }
 
+        if (filmDto.getDirectors() != null) {
+            film.addDirectors(filmDto.getDirectors());
+        }
+
         return film;
     }
 
@@ -36,6 +40,7 @@ public class FilmMapper {
                 film.getDuration(),
                 film.getMpa(),
                 film.getGenres(),
+                film.getDirectors(),
                 film.getLikesIds()
         );
     }
