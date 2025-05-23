@@ -10,7 +10,6 @@ import lombok.Data;
 import lombok.Getter;
 import ru.yandex.practicum.filmorate.dal.dto.GenreDto;
 import ru.yandex.practicum.filmorate.dal.dto.MpaDto;
-import ru.yandex.practicum.filmorate.validation.Group;
 import ru.yandex.practicum.filmorate.validation.ReleaseDate;
 
 import java.time.LocalDate;
@@ -22,17 +21,17 @@ import java.util.TreeSet;
 @Data
 @AllArgsConstructor
 public class Film {
-    @NotNull(groups = Group.OnUpdate.class)
+    @NotNull
     private Long id;
-    @NotBlank(groups = {Group.OnCreate.class, Group.OnUpdate.class})
+    @NotBlank
     private String name;
-    @NotBlank(groups = {Group.OnCreate.class, Group.OnUpdate.class})
-    @Size(max = 200, groups = {Group.OnCreate.class, Group.OnUpdate.class})
+    @NotBlank
+    @Size(max = 200)
     private String description;
-    @ReleaseDate(groups = {Group.OnCreate.class, Group.OnUpdate.class})
+    @ReleaseDate
     private LocalDate releaseDate;
-    @NotNull(groups = {Group.OnCreate.class, Group.OnUpdate.class})
-    @Positive(groups = {Group.OnCreate.class, Group.OnUpdate.class})
+    @NotNull
+    @Positive
     private int duration;
     @NotNull
     private MpaDto mpa;
