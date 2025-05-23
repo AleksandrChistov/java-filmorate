@@ -32,12 +32,6 @@ public class FilmController {
         return filmService.getById(filmId);
     }
 
-    @GetMapping("/popular")
-    @ResponseStatus(HttpStatus.OK)
-    public List<ResponseFilmDto> findPopularFilmsByCount(@RequestParam(defaultValue = "10") int count) {
-        return filmService.getPopularFilmsByCount(count);
-    }
-
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseFilmDto create(@Validated @RequestBody FilmDto newFilm) {
@@ -60,6 +54,14 @@ public class FilmController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public boolean deleteLike(@PathVariable @Min(1) long filmId, @PathVariable @Min(1) long userId) {
         return filmService.deleteLike(filmId, userId);
+    }
+
+    @GetMapping("/popular")
+    @ResponseStatus(HttpStatus.OK)
+    public List<ResponseFilmDto> findPopularFilms(@RequestParam(defaultValue = "10") int count,
+                                                  @RequestParam(required = false) Long genreId,
+                                                  @RequestParam(required = false) Long year) {
+        return filmService.findPopularFilms(count, genreId, year);
     }
 
 }
