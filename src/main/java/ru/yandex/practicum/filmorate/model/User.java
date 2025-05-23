@@ -8,7 +8,6 @@ import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.Getter;
-import ru.yandex.practicum.filmorate.validation.Group;
 
 import java.time.LocalDate;
 import java.util.HashSet;
@@ -18,16 +17,16 @@ import java.util.stream.Stream;
 @Data
 @AllArgsConstructor
 public class User {
-    @NotNull(groups = Group.OnUpdate.class)
+    @NotNull
     public Long id;
     private String name;
-    @NotBlank(groups = {Group.OnCreate.class, Group.OnUpdate.class})
+    @NotBlank
     private String login;
-    @NotBlank(groups = {Group.OnCreate.class, Group.OnUpdate.class})
-    @Email(groups = {Group.OnCreate.class, Group.OnUpdate.class})
+    @NotBlank
+    @Email
     private String email;
-    @NotNull(groups = {Group.OnCreate.class, Group.OnUpdate.class})
-    @Past(groups = {Group.OnCreate.class, Group.OnUpdate.class})
+    @NotNull
+    @Past
     private LocalDate birthday;
     @Getter(AccessLevel.NONE)
     private final Set<Long> friendsIds = new HashSet<>();

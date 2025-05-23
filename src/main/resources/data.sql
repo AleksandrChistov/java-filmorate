@@ -1,3 +1,6 @@
+DELETE FROM mpa;
+DELETE FROM genres;
+
 INSERT INTO mpa (name) VALUES ('G');
 INSERT INTO mpa (name) VALUES ('PG');
 INSERT INTO mpa (name) VALUES ('PG-13');
