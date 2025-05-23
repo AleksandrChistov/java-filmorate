@@ -8,13 +8,18 @@ import ru.yandex.practicum.filmorate.excepton.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.ReviewMapper;
 import ru.yandex.practicum.filmorate.model.Review;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.Function;
 
 @Service
 @Slf4j
 public class ReviewService {
     private final ReviewStorage reviewStorage;
+    // todo: удалить после реализации истории и добавлении проверки тут
+    // Map<userId, Map<reviewId, 0 (-1, +1)>>
+    private final Map<Long, Map<Long, Integer>> userLikeTempHistory = new HashMap<>();
 
     public ReviewService(ReviewStorage reviewStorage) {
         this.reviewStorage = reviewStorage;
@@ -71,13 +76,41 @@ public class ReviewService {
 
     public void addLike(long reviewId, long userId) {
         log.info("Добавление лайка к отзыву с id = {}, пользователем с id = {}", reviewId, userId);
-        updateRating(reviewId, oldRating -> oldRating + 1);
+        // Если дизлайка ещё не было = +1
+        // Если дизлайк уже был = +2
+        // todo: чтобы узнать ставил ли данный пользователь уже лайк - нужна история
+        userLikeTempHistory
+                .computeIfAbsent(userId, k -> new HashMap<>())
+                .compute(reviewId, (k, v) -> {
+                    // либо ограничить: один лайк - один пользователь
+                    if (v == null || v >= 0) {
+                        updateRating(reviewId, oldRating -> oldRating + 1);
+                        return 1;
+                    }
+                    updateRating(reviewId, oldRating -> oldRating + 2);
+                    return v + 2;
+                });
+
         log.info("Лайк успешно добавлен");
     }
 
     public void addDislike(long reviewId, long userId) {
         log.info("Добавление дизлайка к отзыву с id = {}, пользователем с id = {}", reviewId, userId);
-        updateRating(reviewId, oldRating -> oldRating - 1);
+        // Если лайка ещё не было = -1
+        // Если лайк уже был = -2
+        // todo: чтобы узнать ставил ли данный пользователь уже дизлайк - нужна история
+        userLikeTempHistory
+                .computeIfAbsent(userId, k -> new HashMap<>())
+                .compute(reviewId, (k, v) -> {
+                    // либо ограничить: один дизлайк - один пользователь
+                    if (v == null || v <= 0) {
+                        updateRating(reviewId, oldRating -> oldRating - 1);
+                        return -1;
+                    }
+                    updateRating(reviewId, oldRating -> oldRating - 2);
+                    return v - 2;
+                });
+
         log.info("Дизлайк успешно добавлен");
     }
 
