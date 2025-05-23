@@ -45,3 +45,12 @@ CREATE TABLE IF NOT EXISTS films_likes (
     user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
     UNIQUE (film_id, user_id)
 );
+
+CREATE TABLE IF NOT EXISTS reviews (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    content VARCHAR(255) NOT NULL,
+    is_positive BOOLEAN NOT NULL,
+    user_id BIGINT,
+    film_id BIGINT,
+    useful INT NOT NULL
+);
