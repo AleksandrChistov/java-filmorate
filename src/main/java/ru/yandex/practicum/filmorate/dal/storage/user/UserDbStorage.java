@@ -25,7 +25,7 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
             "FROM films AS f " +
             "JOIN films_likes AS fl ON f.id = fl.film_id " +
             "JOIN (" +
-                "SELECT fl2.user_id AS ui" +
+                "SELECT fl2.user_id AS ui " +
                 "FROM films_likes AS fl1 " +
                 "JOIN films_likes AS fl2 ON fl1.film_id = fl2.film_id " +
                 "WHERE fl1.user_id = ? AND fl2.user_id != ? " +
