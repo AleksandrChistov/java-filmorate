@@ -6,6 +6,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import ru.yandex.practicum.filmorate.excepton.InternalServerException;
+import ru.yandex.practicum.filmorate.model.Film;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -26,6 +27,10 @@ public class BaseDbStorage<T> {
     }
 
     protected List<T> findMany(String query, RowMapper<T> mapper, Object... params) {
+        return jdbc.query(query, mapper, params);
+    }
+
+    protected List<Film> findManyFilms(String query, RowMapper<Film> mapper, Object... params) {
         return jdbc.query(query, mapper, params);
     }
 

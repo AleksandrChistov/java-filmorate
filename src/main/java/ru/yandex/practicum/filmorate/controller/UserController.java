@@ -6,6 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dal.dto.NewUserDto;
+import ru.yandex.practicum.filmorate.dal.dto.ResponseFilmDto;
 import ru.yandex.practicum.filmorate.dal.dto.UserDto;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.service.UserService;
@@ -79,5 +80,11 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public List<Event> getEvent(@PathVariable @Min(1) long userId) {
         return userService.getEvent(userId);
+    }
+    @GetMapping("/{userId}/recommendations")
+    @ResponseStatus(HttpStatus.OK)
+    public List<ResponseFilmDto> getRecommendations(@PathVariable @Min(1) long userId) {
+        return userService.getRecommendations(userId);
+
     }
 }

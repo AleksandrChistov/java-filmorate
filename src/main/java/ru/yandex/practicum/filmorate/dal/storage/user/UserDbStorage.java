@@ -4,6 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dal.storage.BaseDbStorage;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
@@ -20,12 +21,30 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
     private static final String INSERT_FRIEND_QUERY = "INSERT INTO friendship (user_id, friend_id) VALUES (?, ?)";
     private static final String DELETE_FRIEND_QUERY = "DELETE FROM friendship WHERE user_id = ? AND friend_id = ?";
     private static final String FIND_ALL_BY_USER_ID_QUERY = "SELECT friend_id FROM friendship WHERE user_id = ?";
+    private static final String GET_RECOMMENDATIONS_QUERY = "SELECT f.* " +
+            "FROM films AS f " +
+            "JOIN films_likes AS fl ON f.id = fl.film_id " +
+            "WHERE fl.user_id IN (" +
+            "SELECT fl2.user_id " +
+            "FROM films_likes AS fl1 " +
+            "JOIN films_likes AS fl2 ON fl1.film_id = fl2.film_id " +
+            "WHERE fl1.user_id = ? AND fl2.user_id != ? " +
+            "GROUP BY fl2.user_id " +
+            "ORDER BY COUNT(*) DESC " +
+            "LIMIT 1" +
+            ") " +
+            "AND f.id NOT IN ( " +
+            "SELECT film_id FROM films_likes WHERE user_id = ? " +
+            ") " +
+            "GROUP BY f.id";
 
     private final RowMapper<User> userMapper;
+    private final RowMapper<Film> filmMapper;
 
-    public UserDbStorage(JdbcTemplate jdbc, RowMapper<User> userMapper) {
+    public UserDbStorage(JdbcTemplate jdbc, RowMapper<User> userMapper, RowMapper<Film> filmMapper) {
         super(jdbc);
         this.userMapper = userMapper;
+        this.filmMapper = filmMapper;
     }
 
     @Override
@@ -114,5 +133,9 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
     @Override
     public List<Long> getFriendsIds(long userId) {
         return jdbc.queryForList(FIND_ALL_BY_USER_ID_QUERY, Long.class, userId);
+    }
+
+    public List<Film> getRecommendations(long userId) {
+        return findManyFilms(GET_RECOMMENDATIONS_QUERY, filmMapper, userId, userId, userId);
     }
 }
