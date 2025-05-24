@@ -85,6 +85,5 @@ public class UserController {
     @ResponseStatus(HttpStatus.OK)
     public List<ResponseFilmDto> getRecommendations(@PathVariable @Min(1) long userId) {
         return userService.getRecommendations(userId);
-
     }
 }
