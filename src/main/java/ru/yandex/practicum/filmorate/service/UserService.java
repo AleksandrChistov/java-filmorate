@@ -8,7 +8,9 @@ import ru.yandex.practicum.filmorate.dal.dto.UserDto;
 import ru.yandex.practicum.filmorate.dal.storage.user.UserStorage;
 import ru.yandex.practicum.filmorate.excepton.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.dal.dto.ResponseFilmDto;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -17,9 +19,12 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserService {
     private final UserStorage userStorage;
+    private final FilmService filmService;
 
-    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage, FilmService filmService) {
         this.userStorage = userStorage;
+        this.filmService = filmService;
+
     }
 
     public List<UserDto> getAll() {
@@ -119,5 +124,10 @@ public class UserService {
         return userStorage.getById(userId)
                 .map(UserMapper::mapToUserDto)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id = " + userId + " не найден."));
+    }
+
+    public List<ResponseFilmDto> getRecommendations(long userId) {
+        List<Film> films = userStorage.getRecommendations(userId);
+        return filmService.mapToFilmsDtos(films);
     }
 }
