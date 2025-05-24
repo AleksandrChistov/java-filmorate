@@ -64,4 +64,10 @@ public class FilmController {
         return filmService.findPopularFilms(count, genreId, year);
     }
 
+    @DeleteMapping("/{filmId}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public boolean delete(@PathVariable @Min(1) long filmId) {
+        return filmService.delete(filmId);
+    }
+
 }
