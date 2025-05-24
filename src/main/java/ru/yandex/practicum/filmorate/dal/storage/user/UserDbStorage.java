@@ -21,11 +21,12 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
     private static final String INSERT_FRIEND_QUERY = "INSERT INTO friendship (user_id, friend_id) VALUES (?, ?)";
     private static final String DELETE_FRIEND_QUERY = "DELETE FROM friendship WHERE user_id = ? AND friend_id = ?";
     private static final String FIND_ALL_BY_USER_ID_QUERY = "SELECT friend_id FROM friendship WHERE user_id = ?";
-    private static final String GET_RECOMMENDATIONS_QUERY = "SELECT f.* " +
+    private static final String GET_RECOMMENDATIONS_QUERY =
+            "SELECT f.* " +
             "FROM films AS f " +
             "JOIN films_likes AS fl ON f.id = fl.film_id " +
-            "JOIN (" +
-                "SELECT fl2.user_id AS ui " +
+            "WHERE fl.user_id IN (" +
+                "SELECT fl2.user_id " +
                 "FROM films_likes AS fl1 " +
                 "JOIN films_likes AS fl2 ON fl1.film_id = fl2.film_id " +
                 "WHERE fl1.user_id = ? AND fl2.user_id != ? " +
@@ -33,8 +34,7 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
                 "ORDER BY COUNT(*) DESC " +
                 "LIMIT 1" +
             ") " +
-            "AS similar_users ON fl.user_id = similar_users.user_id " +
-            "WHERE f.id NOT IN (SELECT film_id FROM films_likes WHERE user_id = ?" +
+            "AND f.id NOT IN (SELECT film_id FROM films_likes WHERE user_id = ?" +
             ")";
 
     private final RowMapper<User> userMapper;
