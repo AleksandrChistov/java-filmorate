@@ -24,7 +24,7 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
     private static final String GET_RECOMMENDATIONS_QUERY = "SELECT f.* " +
             "FROM films AS f " +
             "JOIN films_likes AS fl ON f.id = fl.film_id " +
-            "WHERE fl.user_id IN (" +
+            "WHERE fl.user_id = (" +
             "SELECT fl2.user_id " +
             "FROM films_likes AS fl1 " +
             "JOIN films_likes AS fl2 ON fl1.film_id = fl2.film_id " +
@@ -35,8 +35,7 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
             ") " +
             "AND f.id NOT IN ( " +
             "SELECT film_id FROM films_likes WHERE user_id = ? " +
-            ") " +
-            "GROUP BY f.id";
+            ")";
 
     private final RowMapper<User> userMapper;
     private final RowMapper<Film> filmMapper;
