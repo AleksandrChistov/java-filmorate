@@ -24,7 +24,7 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
     private static final String GET_RECOMMENDATIONS_QUERY = "SELECT f.* " +
             "FROM films AS f " +
             "JOIN films_likes AS fl ON f.id = fl.film_id " +
-            "WHERE fl.user_id IN (" +
+            "JOIN (" +
             "SELECT fl2.user_id " +
             "FROM films_likes AS fl1 " +
             "JOIN films_likes AS fl2 ON fl1.film_id = fl2.film_id " +
@@ -33,8 +33,8 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
             "ORDER BY COUNT(*) DESC " +
             "LIMIT 1" +
             ") " +
-            "AND f.id NOT IN ( " +
-            "SELECT film_id FROM films_likes WHERE user_id = ? " +
+            "AS similar_users ON fl.user_id = similar_users.user_id " +
+            "WHERE f.id NOT IN (SELECT film_id FROM films_likes WHERE user_id = ?" +
             ")";
 
     private final RowMapper<User> userMapper;
