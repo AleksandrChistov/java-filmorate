@@ -79,6 +79,23 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     private static final String DELETE_LIKE_QUERY = "DELETE FROM films_likes WHERE film_id = ? AND user_id = ?";
     private static final String FIND_LIKES_BY_FILM_ID_QUERY = "SELECT user_id FROM films_likes WHERE film_id = ?";
     private static final String FIND_LIKES_BY_FILM_IDS_QUERY = "SELECT user_id, film_id FROM films_likes WHERE film_id IN (:filmsIds)";
+    private static final String FIND_FILMS_BY_DIRECTOR_ID_LIKES_QUERY = "SELECT f.id, f.name, f.description," +
+            " f.release_date, f.duration, m.id AS mpa_id, m.name AS mpa_name, COUNT(fl.film_id) AS likes_count " +
+            "FROM films f " +
+            "JOIN films_directors fd ON f.id = fd.film_id " +
+            "LEFT JOIN films_likes fl ON f.id = fl.film_id " +
+            "JOIN mpa m ON f.mpa_id = m.id " +
+            "WHERE fd.director_id = ? " +
+            "GROUP BY f.id " +
+            "ORDER BY likes_count DESC";
+    private static final String FIND_FILMS_BY_DIRECTOR_ID_YEAR_QUERY = "SELECT f.id, f.name, f.description," +
+            " f.release_date, f.duration, m.id AS mpa_id, m.name AS mpa_name " +
+            "FROM films f " +
+            "JOIN films_directors fd ON f.id = fd.film_id " +
+            "JOIN mpa m ON f.mpa_id = m.id " +
+            "WHERE fd.director_id = ? " +
+            "GROUP BY f.id " +
+            "ORDER BY EXTRACT(YEAR FROM f.release_date)";
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -183,5 +200,15 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     @Override
     public List<Film> findPopularFilmsByYear(int count, Long year) {
         return findMany(FIND_POPULAR_FILMS_BY_YEAR_QUERY, mapper, year, count);
+    }
+
+    @Override
+    public List<Film> getFilmsDirectorLikes(Long directorId) {
+        return findMany(FIND_FILMS_BY_DIRECTOR_ID_LIKES_QUERY, mapper, directorId);
+    }
+
+    @Override
+    public List<Film> getFilmsDirectorYear(Long directorId) {
+        return findMany(FIND_FILMS_BY_DIRECTOR_ID_YEAR_QUERY, mapper, directorId);
     }
 }
