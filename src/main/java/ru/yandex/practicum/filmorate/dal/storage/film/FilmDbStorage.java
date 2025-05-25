@@ -12,7 +12,7 @@ import java.sql.ResultSet;
 import java.util.*;
 
 @Repository
-public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
+public class FilmDbStorage extends BaseDbStorage implements FilmStorage {
     private static final String INSERT_FILM_QUERY = "INSERT INTO films (name, description, release_date, duration, mpa_id) " +
             "VALUES (?, ?, ?, ?, ?)";
     private static final String UPDATE_FILM_QUERY = "UPDATE films SET name = ?, description = ?, " +

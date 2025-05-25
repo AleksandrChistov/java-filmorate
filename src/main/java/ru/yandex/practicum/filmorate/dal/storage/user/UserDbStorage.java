@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
+public class UserDbStorage extends BaseDbStorage implements UserStorage {
     private static final String INSERT_USER_QUERY = "INSERT INTO users (name, login, email, birthday) VALUES (?, ?, ?, ?)";
     private static final String UPDATE_USER_QUERY = "UPDATE users SET name = ?, login = ?, email = ?, birthday = ? WHERE id = ?";
     private static final String DELETE_USER_BY_ID_QUERY = "DELETE FROM users WHERE id = ?";
@@ -135,6 +135,6 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
     }
 
     public List<Film> getRecommendations(long userId) {
-        return findManyFilms(GET_RECOMMENDATIONS_QUERY, filmMapper, userId, userId, userId);
+        return findMany(GET_RECOMMENDATIONS_QUERY, filmMapper, userId, userId, userId);
     }
 }

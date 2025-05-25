@@ -12,7 +12,7 @@ import java.sql.ResultSet;
 import java.util.*;
 
 @Repository
-public class GenreDbStorage extends BaseDbStorage<Genre> implements GenreStorage {
+public class GenreDbStorage extends BaseDbStorage implements GenreStorage {
     private static final String INSERT_GENRES_BY_FILM_ID_QUERY = "INSERT INTO films_genres (film_id, genre_id) VALUES (?, ?)";
     private static final String FIND_ALL_GENRES_QUERY = "SELECT * FROM genres";
     private static final String FIND_GENRE_BY_ID_QUERY = "SELECT * FROM genres WHERE id = ?";

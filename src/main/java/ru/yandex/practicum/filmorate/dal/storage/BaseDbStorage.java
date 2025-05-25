@@ -6,7 +6,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import ru.yandex.practicum.filmorate.excepton.InternalServerException;
-import ru.yandex.practicum.filmorate.model.Film;
 
 import java.sql.PreparedStatement;
 import java.sql.Statement;
@@ -14,10 +13,10 @@ import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-public class BaseDbStorage<T> {
+public class BaseDbStorage {
     protected final JdbcTemplate jdbc;
 
-    protected Optional<T> findOne(String query, RowMapper<T> mapper, Object... params) {
+    protected <T> Optional<T> findOne(String query, RowMapper<T> mapper, Object... params) {
         try {
             T result = jdbc.queryForObject(query, mapper, params);
             return Optional.ofNullable(result);
@@ -26,11 +25,7 @@ public class BaseDbStorage<T> {
         }
     }
 
-    protected List<T> findMany(String query, RowMapper<T> mapper, Object... params) {
-        return jdbc.query(query, mapper, params);
-    }
-
-    protected List<Film> findManyFilms(String query, RowMapper<Film> mapper, Object... params) {
+    protected <T> List<T> findMany(String query, RowMapper<T> mapper, Object... params) {
         return jdbc.query(query, mapper, params);
     }
 

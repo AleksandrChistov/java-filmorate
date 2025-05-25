@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class ReviewDbStorage extends BaseDbStorage<Review> implements ReviewStorage {
+public class ReviewDbStorage extends BaseDbStorage implements ReviewStorage {
     private static final String FIND_ALL_REVIEWS_QUERY = "SELECT * FROM reviews ORDER BY useful DESC";
     private static final String FIND_ALL_REVIEWS_BY_FILM_ID_AND_COUNT_QUERY = "SELECT * FROM reviews " +
             "WHERE film_id = ? " +
