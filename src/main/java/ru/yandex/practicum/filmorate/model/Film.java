@@ -43,8 +43,8 @@ public class Film {
         genres.add(new GenreDto(genreId));
     }
 
-    public void addGenres(Set<GenreDto> newGenresIds) {
-        genres.addAll(newGenresIds);
+    public void addGenres(Set<GenreDto> newGenres) {
+        genres.addAll(newGenres);
     }
 
     public void removeGenre(long genreId) {
