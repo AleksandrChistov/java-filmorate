@@ -79,3 +79,28 @@ CREATE TABLE IF NOT EXISTS films_directors (
     director_id BIGINT NOT NULL REFERENCES directors(id) ON DELETE CASCADE,
     UNIQUE (film_id, director_id)
 );
+
+CREATE TABLE IF NOT EXISTS events
+(
+    event_id
+    BIGINT
+    GENERATED
+    BY
+    DEFAULT AS
+    IDENTITY
+    PRIMARY
+    KEY,
+    user_id
+    BIGINT
+    NOT
+    NULL
+    REFERENCES
+    users
+(
+    id
+) ON DELETE CASCADE,
+    entity_id BIGINT NOT NULL,
+    event_type VARCHAR NOT NULL,
+    operation VARCHAR NOT NULL,
+    timestamp BIGINT NOT NULL
+    );
