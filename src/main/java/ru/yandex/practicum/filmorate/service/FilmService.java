@@ -4,12 +4,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.dto.*;
+import ru.yandex.practicum.filmorate.dal.storage.event.EventStorage;
 import ru.yandex.practicum.filmorate.dal.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.enums.EventType;
+import ru.yandex.practicum.filmorate.enums.Operation;
 import ru.yandex.practicum.filmorate.excepton.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.DirectorMapper;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.mapper.GenreMapper;
 import ru.yandex.practicum.filmorate.model.Director;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 
@@ -23,15 +27,19 @@ public class FilmService {
     private final GenreService genreService;
     private final MpaService mpaService;
     private final DirectorService directorService;
+    private final EventStorage eventStorage;
 
     public FilmService(
             @Qualifier("filmDbStorage") FilmStorage filmStorage,
-            GenreService genreService, MpaService mpaService, DirectorService directorService
-    ) {
+            GenreService genreService, MpaService mpaService, EventStorage eventStorage, DirectorService directorService) {
         this.filmStorage = filmStorage;
         this.genreService = genreService;
         this.mpaService = mpaService;
+
+        this.eventStorage = eventStorage;
+
         this.directorService = directorService;
+
     }
 
     public List<ResponseFilmDto> getAll() {
@@ -95,6 +103,14 @@ public class FilmService {
     public void addLike(long filmId, long userId) {
         log.info("Добавление лайка пользователем {} к фильму {}", userId, filmId);
         filmStorage.addLike(filmId, userId);
+        eventStorage.addEvent(new Event(
+                System.currentTimeMillis(),
+                userId,
+                EventType.LIKE,
+                Operation.ADD,
+                null,
+                filmId
+        ));
         log.info("Лайк успешно добавлен");
     }
 
@@ -104,6 +120,14 @@ public class FilmService {
         if (isDeleted) {
             log.info("Лайк успешно удален");
         }
+        eventStorage.addEvent(new Event(
+                System.currentTimeMillis(),
+                userId,
+                EventType.LIKE,
+                Operation.REMOVE,
+                null,
+                filmId
+        ));
         return isDeleted;
     }
 

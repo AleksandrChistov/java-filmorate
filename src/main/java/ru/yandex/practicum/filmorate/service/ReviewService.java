@@ -3,9 +3,13 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.dto.UpdateReviewDto;
+import ru.yandex.practicum.filmorate.dal.storage.event.EventStorage;
 import ru.yandex.practicum.filmorate.dal.storage.review.ReviewStorage;
+import ru.yandex.practicum.filmorate.enums.EventType;
+import ru.yandex.practicum.filmorate.enums.Operation;
 import ru.yandex.practicum.filmorate.excepton.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.ReviewMapper;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Review;
 
 import java.util.HashMap;
@@ -17,12 +21,14 @@ import java.util.function.Function;
 @Slf4j
 public class ReviewService {
     private final ReviewStorage reviewStorage;
+    private final EventStorage eventStorage;
     // todo: удалить после реализации истории и добавлении проверки тут
     // Map<userId, Map<reviewId, 0 (-1, +1)>>
     private final Map<Long, Map<Long, Integer>> userLikeTempHistory = new HashMap<>();
 
-    public ReviewService(ReviewStorage reviewStorage) {
+    public ReviewService(ReviewStorage reviewStorage, EventStorage eventStorage) {
         this.reviewStorage = reviewStorage;
+        this.eventStorage = eventStorage;
     }
 
     public List<Review> getAll(Long filmId, int count) {
@@ -49,7 +55,14 @@ public class ReviewService {
         }
 
         Review createdReview = reviewStorage.add(newReview);
-
+        eventStorage.addEvent(new Event(
+                System.currentTimeMillis(),
+                newReview.getUserId(),
+                EventType.REVIEW,
+                Operation.ADD,
+                null,
+                newReview.getReviewId()
+        ));
         log.info("Отзыв успешно добавлен, id = {}", createdReview.getReviewId());
 
         return createdReview;
@@ -63,7 +76,14 @@ public class ReviewService {
                 .orElseThrow(() -> new NotFoundException("Отзыв с id = " + newReview.getReviewId() + " не найден."));
 
         updatedReview = reviewStorage.update(updatedReview);
-
+        eventStorage.addEvent(new Event(
+                System.currentTimeMillis(),
+                newReview.getUserId(),
+                EventType.REVIEW,
+                Operation.UPDATE,
+                null,
+                newReview.getReviewId()
+        ));
         log.info("Отзыв успешно обновлен, id = {}", updatedReview.getReviewId());
 
         return updatedReview;
@@ -71,7 +91,21 @@ public class ReviewService {
 
     public boolean delete(long reviewId) {
         log.info("Удаление отзыва с id = {}", reviewId);
-        return reviewStorage.delete(reviewId);
+        Review reviewToDelete = reviewStorage.getById(reviewId)
+                .orElseThrow(() -> new NotFoundException("Отзыв с id = " + reviewId + " не найден."));
+        boolean isDeleted = reviewStorage.delete(reviewId);
+        if (isDeleted) {
+            eventStorage.addEvent(new Event(
+                    System.currentTimeMillis(),
+                    reviewToDelete.getUserId(),
+                    EventType.REVIEW,
+                    Operation.REMOVE,
+                    null,
+                    reviewToDelete.getReviewId()
+            ));
+            log.info("Отзыв успешно удалён, id = {}", reviewId);
+        }
+        return isDeleted;
     }
 
     public void addLike(long reviewId, long userId) {

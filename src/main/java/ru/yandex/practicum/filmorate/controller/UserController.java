@@ -7,6 +7,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.yandex.practicum.filmorate.dal.dto.NewUserDto;
 import ru.yandex.practicum.filmorate.dal.dto.UserDto;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.List;
@@ -74,4 +75,9 @@ public class UserController {
         return userService.delete(userId);
     }
 
+    @GetMapping("/{userId}/feed")
+    @ResponseStatus(HttpStatus.OK)
+    public List<Event> getEvent(@PathVariable @Min(1) long userId) {
+        return userService.getEvent(userId);
+    }
 }
