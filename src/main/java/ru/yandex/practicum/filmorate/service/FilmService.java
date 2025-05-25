@@ -180,6 +180,23 @@ public class FilmService {
         }
     }
 
+    public List<ResponseFilmDto> getFilmsFromSearch(String query, String by) {
+        if (by.equalsIgnoreCase("title")) {
+            List<Film> films = filmStorage.getFilmsSearchTitle(query);
+            return mapToFilmsDtos(films);
+        } else if (by.equalsIgnoreCase("director")) {
+            List<Film> films = filmStorage.getFilmsSearchDirector(query);
+            return mapToFilmsDtos(films);
+        } else if (by.equalsIgnoreCase("title,director") || by.equalsIgnoreCase("director, title")) {
+            List<Film> films = filmStorage.getFilmsSearchTitle(query);
+            films.addAll(filmStorage.getFilmsSearchDirector(query));
+            return mapToFilmsDtos(films);
+        } else {
+            return List.of();
+        }
+
+    }
+
     public List<ResponseFilmDto> getRecommendationsForUser(long userId) {
         List<Film> films = filmStorage.getRecommendationsForUser(userId);
         return mapToFilmsDtos(films);

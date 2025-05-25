@@ -107,6 +107,23 @@ public class FilmDbStorage extends BaseDbStorage implements FilmStorage {
             "WHERE fd.director_id = ? " +
             "GROUP BY f.id " +
             "ORDER BY EXTRACT(YEAR FROM f.release_date)";
+    private static final String FIND_FILMS_BY_SEARCH_TITLE = "SELECT f.id, f.name, f.description," +
+            " f.release_date, f.duration, m.id AS mpa_id, m.name AS mpa_name, COUNT(fl.film_id) AS likes_count " +
+            "FROM films f " +
+            "JOIN mpa m ON f.mpa_id = m.id " +
+            "LEFT JOIN films_likes fl ON f.id = fl.film_id " +
+            "WHERE f.name LIKE '%' || ? || '%' " +
+            "GROUP BY f.id " +
+            "ORDER BY likes_count DESC";
+    private static final String FIND_FILMS_BY_SEARCH_DIRECTOR = "SELECT f.id, f.name, f.description," +
+            " f.release_date, f.duration, m.id AS mpa_id, m.name AS mpa_name, COUNT(fl.film_id) AS likes_count " +
+            "FROM films f " +
+            "JOIN mpa m ON f.mpa_id = m.id " +
+            "LEFT JOIN films_likes fl ON f.id = fl.film_id " +
+            "JOIN films_directors fd ON f.id = fd.film_id " +
+            "JOIN directors d ON fd.director_id = d.id " +
+            "WHERE d.name LIKE '%' || ? || '%' " +
+            "ORDER BY likes_count DESC";
     private static final String FIND_USERID_FOR_RECOMMENDATIONS_QUERY =
             "SELECT fl2.user_id " +
                     "FROM films_likes fl1 " +
@@ -243,6 +260,16 @@ public class FilmDbStorage extends BaseDbStorage implements FilmStorage {
     @Override
     public List<Film> getFilmsDirectorYear(Long directorId) {
         return findMany(FIND_FILMS_BY_DIRECTOR_ID_YEAR_QUERY, mapper, directorId);
+    }
+
+    @Override
+    public List<Film> getFilmsSearchTitle(String substring) {
+        return findMany(FIND_FILMS_BY_SEARCH_TITLE, mapper, substring);
+    }
+
+    @Override
+    public List<Film> getFilmsSearchDirector(String substring) {
+        return findMany(FIND_FILMS_BY_SEARCH_DIRECTOR, mapper, substring);
     }
 
     @Override
