@@ -158,6 +158,6 @@ public class UserDbStorage extends BaseDbStorage implements UserStorage {
         if (idUserForRecommendations.isEmpty()) {
             return Collections.emptyList();
         }
-        return findMany(GET_RECOMMENDATIONS_QUERY, filmMapper, idUserForRecommendations.get(), userId);
+        return findMany(GET_RECOMMENDATIONS_QUERY, filmMapper, userId, idUserForRecommendations.get());
     }
 }
