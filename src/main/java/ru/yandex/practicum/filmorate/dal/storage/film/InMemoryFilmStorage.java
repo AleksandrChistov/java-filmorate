@@ -144,4 +144,9 @@ public class InMemoryFilmStorage implements FilmStorage {
     public List<Film> getFilmsDirectorYear(Long directorId) {
         return List.of();
     }
+
+    @Override
+    public List<Film> getRecommendationsForUser(long userId) {
+        return List.of();
+    }
 }

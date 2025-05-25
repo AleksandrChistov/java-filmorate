@@ -28,4 +28,6 @@ public interface FilmStorage extends Storage<Film> {
     List<Film> getFilmsDirectorLikes(Long directorId);
 
     List<Film> getFilmsDirectorYear(Long directorId);
+
+    List<Film> getRecommendationsForUser(long userId);
 }
