@@ -107,6 +107,23 @@ public class FilmDbStorage extends BaseDbStorage implements FilmStorage {
             "WHERE fd.director_id = ? " +
             "GROUP BY f.id " +
             "ORDER BY EXTRACT(YEAR FROM f.release_date)";
+    private static final String FIND_USERID_FOR_RECOMMENDATIONS_QUERY =
+            "SELECT fl2.user_id " +
+                    "FROM films_likes fl1 " +
+                    "JOIN films_likes fl2 ON fl1.film_id = fl2.film_id " +
+                    "WHERE fl1.user_id = ? AND fl2.user_id != ? " +
+                    "GROUP BY fl2.user_id " +
+                    "ORDER BY COUNT(*) DESC " +
+                    "LIMIT 1";
+    private static final String GET_RECOMMENDATIONS_QUERY =
+            "SELECT f.id, f.name, description, release_date, duration, " +
+                    "mpa.id AS mpa_id, mpa.name AS mpa_name, " +
+                    "FROM films f " +
+                    "JOIN films_likes fl ON f.id = fl.film_id " +
+                    "LEFT JOIN mpa ON mpa.id = f.mpa_id " +
+                    "LEFT JOIN films_likes user_likes ON f.id = user_likes.film_id AND user_likes.user_id = ? " +
+                    "WHERE fl.user_id = ? " +
+                    "AND user_likes.film_id IS NULL";
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -226,5 +243,14 @@ public class FilmDbStorage extends BaseDbStorage implements FilmStorage {
     @Override
     public List<Film> getFilmsDirectorYear(Long directorId) {
         return findMany(FIND_FILMS_BY_DIRECTOR_ID_YEAR_QUERY, mapper, directorId);
+    }
+
+    @Override
+    public List<Film> getRecommendationsForUser(long userId) {
+        Optional<Long> idUserForRecommendations = findOneLong(FIND_USERID_FOR_RECOMMENDATIONS_QUERY, userId, userId);
+        if (idUserForRecommendations.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return findMany(GET_RECOMMENDATIONS_QUERY, mapper, userId, idUserForRecommendations.get());
     }
 }

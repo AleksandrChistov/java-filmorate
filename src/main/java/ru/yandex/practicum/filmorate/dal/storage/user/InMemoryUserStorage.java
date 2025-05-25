@@ -1,10 +1,8 @@
 package ru.yandex.practicum.filmorate.dal.storage.user;
 
-import jakarta.validation.constraints.Min;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.excepton.NotFoundException;
-import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.*;
@@ -109,10 +107,5 @@ public class InMemoryUserStorage implements UserStorage {
     private User findUser(long userId) {
         return getById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователя с id = " + userId + " не найден."));
-    }
-
-    @Override
-    public List<Film> getRecommendations(@Min(1) long userId) {
-        return null;
     }
 }

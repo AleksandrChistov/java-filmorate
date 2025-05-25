@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.dal.dto.NewUserDto;
 import ru.yandex.practicum.filmorate.dal.dto.ResponseFilmDto;
 import ru.yandex.practicum.filmorate.dal.dto.UserDto;
 import ru.yandex.practicum.filmorate.model.Event;
+import ru.yandex.practicum.filmorate.service.FilmService;
 import ru.yandex.practicum.filmorate.service.UserService;
 
 import java.util.List;
@@ -19,6 +20,7 @@ import java.util.List;
 @Validated
 public class UserController {
     private final UserService userService;
+    private final FilmService filmService;
 
     public static final String URL = "/users";
 
@@ -85,6 +87,6 @@ public class UserController {
     @GetMapping("/{userId}/recommendations")
     @ResponseStatus(HttpStatus.OK)
     public List<ResponseFilmDto> getRecommendations(@PathVariable @Min(1) long userId) {
-        return userService.getRecommendations(userId);
+        return filmService.getRecommendationsForUser(userId);
     }
 }

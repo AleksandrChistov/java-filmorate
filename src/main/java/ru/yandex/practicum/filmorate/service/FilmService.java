@@ -180,6 +180,11 @@ public class FilmService {
         }
     }
 
+    public List<ResponseFilmDto> getRecommendationsForUser(long userId) {
+        List<Film> films = filmStorage.getRecommendationsForUser(userId);
+        return mapToFilmsDtos(films);
+    }
+
     public ResponseFilmDto mapToFilmDto(Film film) {
 
         Set<GenreDto> genreDtos = genreService.getAllByFilmId(film.getId());
