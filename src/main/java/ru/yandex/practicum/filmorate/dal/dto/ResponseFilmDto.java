@@ -31,5 +31,7 @@ public class ResponseFilmDto {
     private final MpaDto mpa;
     @NotNull
     private final Set<GenreDto> genres;
+    @NotNull
+    private final Set<DirectorDto> directors;
     private final Set<Long> likes;
 }

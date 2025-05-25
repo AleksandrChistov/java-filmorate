@@ -3,14 +3,13 @@ package ru.yandex.practicum.filmorate.service;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.dal.dto.FilmDto;
-import ru.yandex.practicum.filmorate.dal.dto.GenreDto;
-import ru.yandex.practicum.filmorate.dal.dto.MpaDto;
-import ru.yandex.practicum.filmorate.dal.dto.ResponseFilmDto;
+import ru.yandex.practicum.filmorate.dal.dto.*;
 import ru.yandex.practicum.filmorate.dal.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.excepton.NotFoundException;
+import ru.yandex.practicum.filmorate.mapper.DirectorMapper;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.mapper.GenreMapper;
+import ru.yandex.practicum.filmorate.model.Director;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 
@@ -23,14 +22,16 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final GenreService genreService;
     private final MpaService mpaService;
+    private final DirectorService directorService;
 
     public FilmService(
             @Qualifier("filmDbStorage") FilmStorage filmStorage,
-            GenreService genreService, MpaService mpaService
+            GenreService genreService, MpaService mpaService, DirectorService directorService
     ) {
         this.filmStorage = filmStorage;
         this.genreService = genreService;
         this.mpaService = mpaService;
+        this.directorService = directorService;
     }
 
     public List<ResponseFilmDto> getAll() {
@@ -58,6 +59,10 @@ public class FilmService {
             genreService.addGenresByFilmId(genresIds, film.getId());
         }
 
+        if (newFilm.getDirectors() != null) {
+            directorService.addDirectorsByFilmId(film);
+        }
+
         return mapToFilmDto(film);
     }
 
@@ -73,6 +78,10 @@ public class FilmService {
         updatedFilm.setId(newFilm.getId());
 
         updatedFilm = filmStorage.update(updatedFilm);
+
+        if (newFilm.getDirectors() != null) {
+            directorService.addDirectorsByFilmId(updatedFilm);
+        }
 
         log.info("Фильм успешно обновлен, id = {}", updatedFilm.getId());
 
@@ -98,36 +107,6 @@ public class FilmService {
         return isDeleted;
     }
 
-    private ResponseFilmDto mapToFilmDto(Film film) {
-
-        Set<GenreDto> genreDtos = genreService.getAllByFilmId(film.getId());
-        Set<Long> likes = new HashSet<>(filmStorage.getLikesByFilmId(film.getId()));
-
-        film.addGenres(genreDtos);
-        film.addLikes(likes);
-
-        return FilmMapper.mapToFilmDto(film);
-    }
-
-    private List<ResponseFilmDto> mapToFilmsDtos(List<Film> films) {
-        List<Long> filmsIds = films.stream().map(Film::getId).toList();
-
-        Map<Long, Set<Genre>> filmIdToGenresMap = genreService.getAllByFilmIds(filmsIds);
-        Map<Long, List<Long>> filmIdToLikesMap = filmStorage.getLikesByFilmIds(filmsIds);
-
-        return films.stream().map(film -> {
-            Set<Genre> genres = filmIdToGenresMap.getOrDefault(film.getId(), new HashSet<>());
-            Set<GenreDto> genreDtos = genres.stream().map(GenreMapper::mapToGenreDto).collect(Collectors.toSet());
-
-            Set<Long> likes = new HashSet<>(filmIdToLikesMap.getOrDefault(film.getId(), new ArrayList<>()));
-
-            film.addGenres(genreDtos);
-            film.addLikes(likes);
-
-            return FilmMapper.mapToFilmDto(film);
-        }).collect(Collectors.toList());
-    }
-
     public List<ResponseFilmDto> findPopularFilms(int count, Long genreId, Long year) {
         if (genreId != null && year != null) {
             log.info("Получение списка популярных фильмов {} года в жанре {}, в количестве {}", year, genreId, count);
@@ -146,5 +125,58 @@ public class FilmService {
             List<Film> films = filmStorage.getPopularFilmsByCount(count);
             return mapToFilmsDtos(films);
         }
+    }
+
+    public List<ResponseFilmDto> getFilmsDirectorById(Long directorId, String sortBy) {
+        if (sortBy.equalsIgnoreCase("likes")) {
+            log.info("Получение списка фильмов режиссера с id = {}, отсортированным по количеству лайков", directorId);
+            List<Film> films = filmStorage.getFilmsDirectorLikes(directorId);
+            return mapToFilmsDtos(films);
+        } else if (sortBy.equalsIgnoreCase("year")) {
+            log.info("Получение списка фильмов режиссера с id = {}, отсортированным по году выпуска", directorId);
+            List<Film> films = filmStorage.getFilmsDirectorYear(directorId);
+            return mapToFilmsDtos(films);
+        } else {
+            log.warn("Некорректное значение параметра sortBy = {}, возможные значения: Likes, Year", sortBy);
+            throw new NotFoundException(String.format(
+                    "Некорректное значение параметра sortBy = %s, возможные значения: Likes, Year", sortBy));
+        }
+    }
+
+    private ResponseFilmDto mapToFilmDto(Film film) {
+
+        Set<GenreDto> genreDtos = genreService.getAllByFilmId(film.getId());
+        Set<Long> likes = new HashSet<>(filmStorage.getLikesByFilmId(film.getId()));
+        Set<DirectorDto> directorDtos = directorService.getAllByFilmId(film.getId());
+
+        film.addGenres(genreDtos);
+        film.addLikes(likes);
+        film.addDirectors(directorDtos);
+
+        return FilmMapper.mapToFilmDto(film);
+    }
+
+    private List<ResponseFilmDto> mapToFilmsDtos(List<Film> films) {
+        List<Long> filmsIds = films.stream().map(Film::getId).toList();
+
+        Map<Long, Set<Genre>> filmIdToGenresMap = genreService.getAllByFilmIds(filmsIds);
+        Map<Long, List<Long>> filmIdToLikesMap = filmStorage.getLikesByFilmIds(filmsIds);
+        Map<Long, Set<Director>> filmIdToDirectorsMap = directorService.getAllByFilmIds(filmsIds);
+
+        return films.stream().map(film -> {
+            Set<Genre> genres = filmIdToGenresMap.getOrDefault(film.getId(), new HashSet<>());
+            Set<GenreDto> genreDtos = genres.stream().map(GenreMapper::mapToGenreDto).collect(Collectors.toSet());
+
+            Set<Long> likes = new HashSet<>(filmIdToLikesMap.getOrDefault(film.getId(), new ArrayList<>()));
+
+            Set<Director> directors = filmIdToDirectorsMap.getOrDefault(film.getId(), new HashSet<>());
+            Set<DirectorDto> directorDtos = directors.stream().map(DirectorMapper::mapToDirectorDto).collect(Collectors.toSet());
+
+            film.addGenres(genreDtos);
+            film.addLikes(likes);
+            film.addDirectors(directorDtos);
+
+            return FilmMapper.mapToFilmDto(film);
+        }).collect(Collectors.toList());
     }
 }

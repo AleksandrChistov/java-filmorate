@@ -30,4 +30,5 @@ public class FilmDto {
     @NotNull
     private MpaDto mpa;
     private Set<GenreDto> genres;
+    private Set<DirectorDto> directors;
 }

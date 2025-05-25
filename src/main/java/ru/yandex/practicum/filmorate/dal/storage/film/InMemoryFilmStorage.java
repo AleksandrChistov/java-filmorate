@@ -129,4 +129,14 @@ public class InMemoryFilmStorage implements FilmStorage {
     public List<Film> findPopularFilmsByYear(int count, Long year) {
         return null;
     }
+
+    @Override
+    public List<Film> getFilmsDirectorLikes(Long directorId) {
+        return List.of();
+    }
+
+    @Override
+    public List<Film> getFilmsDirectorYear(Long directorId) {
+        return List.of();
+    }
 }
