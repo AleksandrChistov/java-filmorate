@@ -14,7 +14,7 @@ import java.sql.ResultSet;
 import java.util.*;
 
 @Repository
-public class DirectorDbStorage extends BaseDbStorage<Director> implements DirectorStorage {
+public class DirectorDbStorage extends BaseDbStorage implements DirectorStorage {
     private static final String INSERT_DIRECTOR_QUERY = "INSERT INTO directors (name) VALUES (?)";
     private static final String INSERT_FILMS_DIRECTORS_QUERY = "INSERT INTO films_directors (film_id, director_id) VALUES (?, ?)";
     private static final String FIND_ALL_DIRECTORS_QUERY = "SELECT * FROM directors";

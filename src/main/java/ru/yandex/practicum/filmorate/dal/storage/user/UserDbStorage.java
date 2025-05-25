@@ -25,35 +25,21 @@ public class UserDbStorage extends BaseDbStorage implements UserStorage {
 
     private static final String FIND_USERID_FOR_RECOMMENDATIONS_QUERY =
             "SELECT fl2.user_id " +
-            "FROM films_likes fl1 " +
-            "JOIN films_likes fl2 ON fl1.film_id = fl2.film_id " +
-            "WHERE fl1.user_id = ? AND fl2.user_id != ? " +
-            "GROUP BY fl2.user_id " +
-            "ORDER BY COUNT(*) DESC " +
-            "LIMIT 1";
+                    "FROM films_likes fl1 " +
+                    "JOIN films_likes fl2 ON fl1.film_id = fl2.film_id " +
+                    "WHERE fl1.user_id = ? AND fl2.user_id != ? " +
+                    "GROUP BY fl2.user_id " +
+                    "ORDER BY COUNT(*) DESC " +
+                    "LIMIT 1";
     private static final String GET_RECOMMENDATIONS_QUERY =
-            "SELECT f.* " +
+            "SELECT f.id, f.name, description, release_date, duration, " +
+                    "mpa.id AS mpa_id, mpa.name AS mpa_name, " +
                     "FROM films f " +
                     "JOIN films_likes fl ON f.id = fl.film_id " +
+                    "LEFT JOIN mpa ON mpa.id = f.mpa_id " +
                     "LEFT JOIN films_likes user_likes ON f.id = user_likes.film_id AND user_likes.user_id = ? " +
                     "WHERE fl.user_id = ? " +
                     "AND user_likes.film_id IS NULL";
-
-    //private static final String GET_RECOMMENDATIONS_QUERY =
-    //        "SELECT f.* " +
-    //        "FROM films AS f " +
-    //        "JOIN films_likes AS fl ON f.id = fl.film_id " +
-    //        "WHERE fl.user_id = (" +
-    //            "SELECT fl2.user_id " +
-    //            "FROM films_likes AS fl1 " +
-    //            "JOIN films_likes AS fl2 ON fl1.film_id = fl2.film_id " +
-    //            "WHERE fl1.user_id = ? AND fl2.user_id != ? " +
-    //            "GROUP BY fl2.user_id " +
-    //            "ORDER BY COUNT(*) DESC " +
-    //            "LIMIT 1" +
-    //        ") " +
-    //        "AND f.id NOT IN (SELECT film_id FROM films_likes WHERE user_id = ?" +
-    //        ")";
 
     private final RowMapper<User> userMapper;
     private final RowMapper<Film> filmMapper;

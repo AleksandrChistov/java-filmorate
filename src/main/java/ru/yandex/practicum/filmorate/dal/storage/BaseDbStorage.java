@@ -13,7 +13,7 @@ import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-public class BaseDbStorage<T> {
+public class BaseDbStorage {
     protected final JdbcTemplate jdbc;
 
     protected <T> Optional<T> findOne(String query, RowMapper<T> mapper, Object... params) {
