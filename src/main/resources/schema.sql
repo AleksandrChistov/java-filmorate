@@ -1,3 +1,5 @@
+DROP TABLE IF EXISTS films_likes, friendship, users, films_genres, genres, mpa, films, films_directors, directors;
+
 CREATE TABLE IF NOT EXISTS users (
     id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
     name VARCHAR(255) NOT NULL,

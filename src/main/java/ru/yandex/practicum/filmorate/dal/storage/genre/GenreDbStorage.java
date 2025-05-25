@@ -17,12 +17,14 @@ public class GenreDbStorage extends BaseDbStorage<Genre> implements GenreStorage
     private static final String FIND_ALL_GENRES_QUERY = "SELECT * FROM genres";
     private static final String FIND_GENRE_BY_ID_QUERY = "SELECT * FROM genres WHERE id = ?";
     private static final String FIND_GENRES_BY_FILM_IDS_QUERY = "SELECT " +
-            "g.id AS id, g.name AS name, fg.film_id FROM films_genres fg " +
+            "g.id AS id, g.name AS name, fg.film_id " +
+            "FROM films_genres fg " +
             "JOIN genres g ON g.id = fg.genre_id " +
             "WHERE fg.film_id IN (:filmsIds) " +
             "ORDER BY g.id";
     private static final String FIND_GENRES_BY_FILM_ID_QUERY = "SELECT " +
-            "g.id AS id, g.name AS name FROM films_genres fg " +
+            "g.id AS id, g.name AS name " +
+            "FROM films_genres fg " +
             "JOIN genres g ON g.id = fg.genre_id " +
             "WHERE fg.film_id = ? " +
             "ORDER BY g.id";

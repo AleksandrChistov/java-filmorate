@@ -41,8 +41,10 @@ class FilmControllerTest {
     void createWithNameValidationException() throws Exception {
         Set<GenreDto> genreDtos = new HashSet<>();
         genreDtos.add(new GenreDto(1));
-        FilmDto filmWithNullName = new FilmDto(null, null, "Film description", LocalDate.now(), 60, new MpaDto(1), genreDtos);
-        FilmDto filmWithEmptyName = new FilmDto(null, "", "Film description", LocalDate.now(), 60, new MpaDto(1), genreDtos);
+        Set<DirectorDto> directorDtos = new HashSet<>();
+        directorDtos.add(new DirectorDto(1));
+        FilmDto filmWithNullName = new FilmDto(null, null, "Film description", LocalDate.now(), 60, new MpaDto(1), genreDtos, directorDtos);
+        FilmDto filmWithEmptyName = new FilmDto(null, "", "Film description", LocalDate.now(), 60, new MpaDto(1), genreDtos, directorDtos);
 
         mockMvc.perform(MockMvcRequestBuilders.post(FilmController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -63,10 +65,12 @@ class FilmControllerTest {
     void createWithDescriptionValidationException() throws Exception {
         Set<GenreDto> genreDtos = new HashSet<>();
         genreDtos.add(new GenreDto(1));
-        FilmDto filmWithNullDescription = new FilmDto(null, "Film Name", null, LocalDate.now(), 60, new MpaDto(1), genreDtos);
-        FilmDto filmWithEmptyDescription = new FilmDto(null, "Film Name", "", LocalDate.now(), 60, new MpaDto(1), genreDtos);
+        Set<DirectorDto> directorDtos = new HashSet<>();
+        directorDtos.add(new DirectorDto(1));
+        FilmDto filmWithNullDescription = new FilmDto(null, "Film Name", null, LocalDate.now(), 60, new MpaDto(1), genreDtos, directorDtos);
+        FilmDto filmWithEmptyDescription = new FilmDto(null, "Film Name", "", LocalDate.now(), 60, new MpaDto(1), genreDtos, directorDtos);
         String chars201 = "Description with overall 201 chars Description with overall 201 chars Description with overall 201 chars Description with overall 201 chars Description with overall 201 chars Description overall 201 ch";
-        FilmDto filmWithMoreThan200CharsDescription = new FilmDto(null, "Film Name", chars201, LocalDate.now(), 60, new MpaDto(1), genreDtos);
+        FilmDto filmWithMoreThan200CharsDescription = new FilmDto(null, "Film Name", chars201, LocalDate.now(), 60, new MpaDto(1), genreDtos, directorDtos);
 
         mockMvc.perform(MockMvcRequestBuilders.post(FilmController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -94,8 +98,10 @@ class FilmControllerTest {
     void createWithReleaseDateValidationException() throws Exception {
         Set<GenreDto> genreDtos = new HashSet<>();
         genreDtos.add(new GenreDto(1));
-        FilmDto filmWithNullReleaseDate = new FilmDto(null, "Film name", "Film description", null, 60, new MpaDto(1), genreDtos);
-        FilmDto filmWithReleaseDateBeforeMinDate = new FilmDto(null, "Film name", "Film description", MIN_RELEASE_DATE.minusDays(1), 60, new MpaDto(1), genreDtos);
+        Set<DirectorDto> directorDtos = new HashSet<>();
+        directorDtos.add(new DirectorDto(1));
+        FilmDto filmWithNullReleaseDate = new FilmDto(null, "Film name", "Film description", null, 60, new MpaDto(1), genreDtos, directorDtos);
+        FilmDto filmWithReleaseDateBeforeMinDate = new FilmDto(null, "Film name", "Film description", MIN_RELEASE_DATE.minusDays(1), 60, new MpaDto(1), genreDtos, directorDtos);
 
         mockMvc.perform(MockMvcRequestBuilders.post(FilmController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -116,7 +122,9 @@ class FilmControllerTest {
     void createWithDurationValidationException() throws Exception {
         Set<GenreDto> genreDtos = new HashSet<>();
         genreDtos.add(new GenreDto(1));
-        FilmDto filmWithNegativeDuration = new FilmDto(null, "Film name", "Film description", LocalDate.now(), -1, new MpaDto(1), genreDtos);
+        Set<DirectorDto> directorDtos = new HashSet<>();
+        directorDtos.add(new DirectorDto(1));
+        FilmDto filmWithNegativeDuration = new FilmDto(null, "Film name", "Film description", LocalDate.now(), -1, new MpaDto(1), genreDtos, directorDtos);
 
         mockMvc.perform(MockMvcRequestBuilders.post(FilmController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -130,7 +138,9 @@ class FilmControllerTest {
     void updateWithIdValidationException() throws Exception {
         Set<GenreDto> genreDtos = new HashSet<>();
         genreDtos.add(new GenreDto(1));
-        FilmDto filmWithNotFoundId = new FilmDto(4L, "Film name", "Film description", LocalDate.now(), 60, new MpaDto(1), genreDtos);
+        Set<DirectorDto> directorDtos = new HashSet<>();
+        directorDtos.add(new DirectorDto(1));
+        FilmDto filmWithNotFoundId = new FilmDto(4L, "Film name", "Film description", LocalDate.now(), 60, new MpaDto(1), genreDtos, directorDtos);
 
         mockMvc.perform(MockMvcRequestBuilders.put(FilmController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -144,8 +154,10 @@ class FilmControllerTest {
     void updateWithNameValidationException() throws Exception {
         Set<GenreDto> genreDtos = new HashSet<>();
         genreDtos.add(new GenreDto(1));
-        FilmDto filmWithNullName = new FilmDto(1L, null, "Film description", LocalDate.now(), 60, new MpaDto(1), genreDtos);
-        FilmDto filmWithEmptyName = new FilmDto(1L, "", "Film description", LocalDate.now(), 60, new MpaDto(1), genreDtos);
+        Set<DirectorDto> directorDtos = new HashSet<>();
+        directorDtos.add(new DirectorDto(1));
+        FilmDto filmWithNullName = new FilmDto(1L, null, "Film description", LocalDate.now(), 60, new MpaDto(1), genreDtos, directorDtos);
+        FilmDto filmWithEmptyName = new FilmDto(1L, "", "Film description", LocalDate.now(), 60, new MpaDto(1), genreDtos, directorDtos);
 
         mockMvc.perform(MockMvcRequestBuilders.put(FilmController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -166,10 +178,12 @@ class FilmControllerTest {
     void updateWithDescriptionValidationException() throws Exception {
         Set<GenreDto> genreDtos = new HashSet<>();
         genreDtos.add(new GenreDto(1));
-        FilmDto filmWithNullDescription = new FilmDto(1L, "Film Name", null, LocalDate.now(), 60, new MpaDto(1), genreDtos);
-        FilmDto filmWithEmptyDescription = new FilmDto(1L, "Film Name", "", LocalDate.now(), 60, new MpaDto(1), genreDtos);
+        Set<DirectorDto> directorDtos = new HashSet<>();
+        directorDtos.add(new DirectorDto(1));
+        FilmDto filmWithNullDescription = new FilmDto(1L, "Film Name", null, LocalDate.now(), 60, new MpaDto(1), genreDtos, directorDtos);
+        FilmDto filmWithEmptyDescription = new FilmDto(1L, "Film Name", "", LocalDate.now(), 60, new MpaDto(1), genreDtos, directorDtos);
         String chars201 = "Description with overall 201 chars Description with overall 201 chars Description with overall 201 chars Description with overall 201 chars Description with overall 201 chars Description overall 201 ch";
-        FilmDto filmWithMoreThan200CharsDescription = new FilmDto(1L, "Film Name", chars201, LocalDate.now(), 60, new MpaDto(1), genreDtos);
+        FilmDto filmWithMoreThan200CharsDescription = new FilmDto(1L, "Film Name", chars201, LocalDate.now(), 60, new MpaDto(1), genreDtos, directorDtos);
 
         mockMvc.perform(MockMvcRequestBuilders.put(FilmController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -197,8 +211,10 @@ class FilmControllerTest {
     void updateWithReleaseDateValidationException() throws Exception {
         Set<GenreDto> genreDtos = new HashSet<>();
         genreDtos.add(new GenreDto(1));
-        FilmDto filmWithNullReleaseDate = new FilmDto(1L, "Film name", "Film description", null, 60, new MpaDto(1), genreDtos);
-        FilmDto filmWithReleaseDateBeforeMinDate = new FilmDto(1L, "Film name", "Film description", MIN_RELEASE_DATE.minusDays(1), 60, new MpaDto(1), genreDtos);
+        Set<DirectorDto> directorDtos = new HashSet<>();
+        directorDtos.add(new DirectorDto(1));
+        FilmDto filmWithNullReleaseDate = new FilmDto(1L, "Film name", "Film description", null, 60, new MpaDto(1), genreDtos, directorDtos);
+        FilmDto filmWithReleaseDateBeforeMinDate = new FilmDto(1L, "Film name", "Film description", MIN_RELEASE_DATE.minusDays(1), 60, new MpaDto(1), genreDtos, directorDtos);
 
         mockMvc.perform(MockMvcRequestBuilders.put(FilmController.URL)
                         .contentType(MediaType.APPLICATION_JSON)
@@ -219,7 +235,9 @@ class FilmControllerTest {
     void updateWithDurationValidationException() throws Exception {
         Set<GenreDto> genreDtos = new HashSet<>();
         genreDtos.add(new GenreDto(1));
-        FilmDto filmWithNegativeDuration = new FilmDto(1L, "Film name", "Film description", LocalDate.now(), -1, new MpaDto(1L), genreDtos);
+        Set<DirectorDto> directorDtos = new HashSet<>();
+        directorDtos.add(new DirectorDto(1));
+        FilmDto filmWithNegativeDuration = new FilmDto(1L, "Film name", "Film description", LocalDate.now(), -1, new MpaDto(1L), genreDtos, directorDtos);
 
         mockMvc.perform(MockMvcRequestBuilders.put(FilmController.URL)
                         .contentType(MediaType.APPLICATION_JSON)

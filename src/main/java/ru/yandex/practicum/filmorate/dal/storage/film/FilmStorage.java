@@ -22,4 +22,8 @@ public interface FilmStorage extends Storage<Film> {
     public List<Film> findPopularFilmsByGenre(int count, Long genreId);
 
     public List<Film> findPopularFilmsByYear(int count, Long year);
+
+    public List<Film> getFilmsDirectorLikes(Long directorId);
+
+    public List<Film> getFilmsDirectorYear(Long directorId);
 }

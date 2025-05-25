@@ -9,7 +9,7 @@ import lombok.Data;
 @AllArgsConstructor
 public class Director {
     @NotNull
-    Long id;
+    private Long id;
     @NotBlank
-    String name;
+    private String name;
 }
