@@ -81,6 +81,7 @@ public class UserController {
     public List<Event> getEvent(@PathVariable @Min(1) long userId) {
         return userService.getEvent(userId);
     }
+
     @GetMapping("/{userId}/recommendations")
     @ResponseStatus(HttpStatus.OK)
     public List<ResponseFilmDto> getRecommendations(@PathVariable @Min(1) long userId) {
