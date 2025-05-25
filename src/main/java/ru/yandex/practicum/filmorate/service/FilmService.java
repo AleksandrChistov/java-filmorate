@@ -7,10 +7,14 @@ import ru.yandex.practicum.filmorate.dal.dto.FilmDto;
 import ru.yandex.practicum.filmorate.dal.dto.GenreDto;
 import ru.yandex.practicum.filmorate.dal.dto.MpaDto;
 import ru.yandex.practicum.filmorate.dal.dto.ResponseFilmDto;
+import ru.yandex.practicum.filmorate.dal.storage.event.EventStorage;
 import ru.yandex.practicum.filmorate.dal.storage.film.FilmStorage;
+import ru.yandex.practicum.filmorate.enums.EventType;
+import ru.yandex.practicum.filmorate.enums.Operation;
 import ru.yandex.practicum.filmorate.excepton.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.FilmMapper;
 import ru.yandex.practicum.filmorate.mapper.GenreMapper;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Genre;
 
@@ -23,14 +27,16 @@ public class FilmService {
     private final FilmStorage filmStorage;
     private final GenreService genreService;
     private final MpaService mpaService;
+    private final EventStorage eventStorage;
 
     public FilmService(
             @Qualifier("filmDbStorage") FilmStorage filmStorage,
-            GenreService genreService, MpaService mpaService
+            GenreService genreService, MpaService mpaService, EventStorage eventStorage
     ) {
         this.filmStorage = filmStorage;
         this.genreService = genreService;
         this.mpaService = mpaService;
+        this.eventStorage = eventStorage;
     }
 
     public List<ResponseFilmDto> getAll() {
@@ -86,6 +92,14 @@ public class FilmService {
     public void addLike(long filmId, long userId) {
         log.info("Добавление лайка пользователем {} к фильму {}", userId, filmId);
         filmStorage.addLike(filmId, userId);
+        eventStorage.addEvent(new Event(
+                System.currentTimeMillis(),
+                userId,
+                EventType.LIKE,
+                Operation.ADD,
+                null,
+                filmId
+        ));
         log.info("Лайк успешно добавлен");
     }
 
@@ -95,6 +109,14 @@ public class FilmService {
         if (isDeleted) {
             log.info("Лайк успешно удален");
         }
+        eventStorage.addEvent(new Event(
+                System.currentTimeMillis(),
+                userId,
+                EventType.LIKE,
+                Operation.REMOVE,
+                null,
+                filmId
+        ));
         return isDeleted;
     }
 

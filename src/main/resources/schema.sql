@@ -54,3 +54,28 @@ CREATE TABLE IF NOT EXISTS reviews (
     film_id BIGINT,
     useful INT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS events
+(
+    event_id
+    BIGINT
+    GENERATED
+    BY
+    DEFAULT AS
+    IDENTITY
+    PRIMARY
+    KEY,
+    user_id
+    BIGINT
+    NOT
+    NULL
+    REFERENCES
+    users
+(
+    id
+) ON DELETE CASCADE,
+    entity_id BIGINT NOT NULL,
+    event_type VARCHAR NOT NULL,
+    operation VARCHAR NOT NULL,
+    timestamp BIGINT NOT NULL
+    );

@@ -1,13 +1,18 @@
 package ru.yandex.practicum.filmorate.service;
 
+import jakarta.validation.constraints.Min;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.dto.NewUserDto;
 import ru.yandex.practicum.filmorate.dal.dto.UserDto;
+import ru.yandex.practicum.filmorate.dal.storage.event.EventStorage;
 import ru.yandex.practicum.filmorate.dal.storage.user.UserStorage;
+import ru.yandex.practicum.filmorate.enums.EventType;
+import ru.yandex.practicum.filmorate.enums.Operation;
 import ru.yandex.practicum.filmorate.excepton.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
+import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
 
 import java.util.List;
@@ -17,9 +22,11 @@ import java.util.stream.Collectors;
 @Slf4j
 public class UserService {
     private final UserStorage userStorage;
+    private final EventStorage eventStorage;
 
-    public UserService(@Qualifier("userDbStorage") UserStorage userStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage, EventStorage eventStorage) {
         this.userStorage = userStorage;
+        this.eventStorage = eventStorage;
     }
 
     public List<UserDto> getAll() {
@@ -82,8 +89,15 @@ public class UserService {
         log.info("Добавление в друзья пользователя с ID = {}", friendId);
         findUser(userId);
         findUser(friendId);
-
         userStorage.addFriend(userId, friendId);
+        eventStorage.addEvent(new Event(
+                System.currentTimeMillis(),
+                userId,
+                EventType.FRIEND,
+                Operation.ADD,
+                null,
+                friendId
+        ));
         log.info("Пользователь с ID = {} был добавлен в друзья", friendId);
     }
 
@@ -94,6 +108,14 @@ public class UserService {
         findUser(friendId);
 
         boolean isDeleted = userStorage.deleteFriend(userId, friendId);
+        eventStorage.addEvent(new Event(
+                System.currentTimeMillis(),
+                userId,
+                EventType.FRIEND,
+                Operation.REMOVE,
+                null,
+                friendId
+        ));
         if (isDeleted) {
             log.info("Пользователь с ID = {} был удален из друзей", friendId);
         }
@@ -119,5 +141,11 @@ public class UserService {
         return userStorage.getById(userId)
                 .map(UserMapper::mapToUserDto)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id = " + userId + " не найден."));
+    }
+
+    public List<Event> getEvent(@Min(1) long userId) {
+        userStorage.getById(userId)
+                .orElseThrow(() -> new NotFoundException("Пользователь с id = " + userId + " не найден."));
+        return eventStorage.getFeedByUserId(userId);
     }
 }
