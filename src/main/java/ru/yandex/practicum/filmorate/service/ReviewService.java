@@ -12,9 +12,8 @@ import ru.yandex.practicum.filmorate.mapper.ReviewMapper;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.Review;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 @Service
@@ -22,9 +21,6 @@ import java.util.function.Function;
 public class ReviewService {
     private final ReviewStorage reviewStorage;
     private final EventStorage eventStorage;
-    // todo: удалить после реализации истории и добавлении проверки тут
-    // Map<userId, Map<reviewId, 0 (-1, +1)>>
-    private final Map<Long, Map<Long, Integer>> userLikeTempHistory = new HashMap<>();
 
     public ReviewService(ReviewStorage reviewStorage, EventStorage eventStorage) {
         this.reviewStorage = reviewStorage;
@@ -110,40 +106,56 @@ public class ReviewService {
 
     public void addLike(long reviewId, long userId) {
         log.info("Добавление лайка к отзыву с id = {}, пользователем с id = {}", reviewId, userId);
-        // Если дизлайка ещё не было = +1
-        // Если дизлайк уже был = +2
-        // todo: чтобы узнать ставил ли данный пользователь уже лайк - нужна история
-        userLikeTempHistory
-                .computeIfAbsent(userId, k -> new HashMap<>())
-                .compute(reviewId, (k, v) -> {
-                    // либо ограничить: один лайк - один пользователь
-                    if (v == null || v >= 0) {
+
+        Optional<Event> event = eventStorage.getLastEventByReviewIdAndUserId(reviewId, userId);
+
+        event.ifPresentOrElse(
+                e -> {
+                    boolean madeDislike = e.getOperation().equals(Operation.ADD) && e.getEventType().equals(EventType.DISLIKE);
+                    if (madeDislike) {
+                        updateRating(reviewId, oldRating -> oldRating + 2);
+                    } else {
                         updateRating(reviewId, oldRating -> oldRating + 1);
-                        return 1;
                     }
-                    updateRating(reviewId, oldRating -> oldRating + 2);
-                    return v + 2;
-                });
+                },
+                () -> updateRating(reviewId, oldRating -> oldRating + 1));
+
+        eventStorage.addEvent(new Event(
+                System.currentTimeMillis(),
+                userId,
+                EventType.LIKE,
+                Operation.ADD,
+                null,
+                reviewId
+        ));
 
         log.info("Лайк успешно добавлен");
     }
 
     public void addDislike(long reviewId, long userId) {
         log.info("Добавление дизлайка к отзыву с id = {}, пользователем с id = {}", reviewId, userId);
-        // Если лайка ещё не было = -1
-        // Если лайк уже был = -2
-        // todo: чтобы узнать ставил ли данный пользователь уже дизлайк - нужна история
-        userLikeTempHistory
-                .computeIfAbsent(userId, k -> new HashMap<>())
-                .compute(reviewId, (k, v) -> {
-                    // либо ограничить: один дизлайк - один пользователь
-                    if (v == null || v <= 0) {
+
+        Optional<Event> event = eventStorage.getLastEventByReviewIdAndUserId(reviewId, userId);
+
+        event.ifPresentOrElse(
+                e -> {
+                    boolean madeLike = e.getOperation().equals(Operation.ADD) && e.getEventType().equals(EventType.LIKE);
+                    if (madeLike) {
+                        updateRating(reviewId, oldRating -> oldRating - 2);
+                    } else {
                         updateRating(reviewId, oldRating -> oldRating - 1);
-                        return -1;
                     }
-                    updateRating(reviewId, oldRating -> oldRating - 2);
-                    return v - 2;
-                });
+                },
+                () -> updateRating(reviewId, oldRating -> oldRating - 1));
+
+        eventStorage.addEvent(new Event(
+                System.currentTimeMillis(),
+                userId,
+                EventType.DISLIKE,
+                Operation.ADD,
+                null,
+                reviewId
+        ));
 
         log.info("Дизлайк успешно добавлен");
     }
@@ -151,12 +163,32 @@ public class ReviewService {
     public void deleteLike(long reviewId, long userId) {
         log.info("Удаление лайка из отзыва с id = {}, пользователем с id = {}", reviewId, userId);
         updateRating(reviewId, oldRating -> oldRating - 1);
+
+        eventStorage.addEvent(new Event(
+                System.currentTimeMillis(),
+                userId,
+                EventType.LIKE,
+                Operation.REMOVE,
+                null,
+                reviewId
+        ));
+
         log.info("Лайк успешно удален");
     }
 
     public void deleteDislike(long reviewId, long userId) {
         log.info("Удаление дизлайка из отзыва с id = {}, пользователем с id = {}", reviewId, userId);
         updateRating(reviewId, oldRating -> oldRating + 1);
+
+        eventStorage.addEvent(new Event(
+                System.currentTimeMillis(),
+                userId,
+                EventType.DISLIKE,
+                Operation.REMOVE,
+                null,
+                reviewId
+        ));
+
         log.info("Дизлайк успешно удален");
     }
 

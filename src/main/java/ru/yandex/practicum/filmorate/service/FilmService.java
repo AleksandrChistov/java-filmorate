@@ -28,18 +28,17 @@ public class FilmService {
     private final MpaService mpaService;
     private final DirectorService directorService;
     private final EventStorage eventStorage;
+    private final UserService userService;
 
     public FilmService(
-            @Qualifier("filmDbStorage") FilmStorage filmStorage,
-            GenreService genreService, MpaService mpaService, EventStorage eventStorage, DirectorService directorService) {
+            @Qualifier("filmDbStorage") FilmStorage filmStorage, GenreService genreService, MpaService mpaService,
+            EventStorage eventStorage, DirectorService directorService, UserService userService) {
         this.filmStorage = filmStorage;
         this.genreService = genreService;
         this.mpaService = mpaService;
-
         this.eventStorage = eventStorage;
-
         this.directorService = directorService;
-
+        this.userService = userService;
     }
 
     public List<ResponseFilmDto> getAll() {
@@ -124,10 +123,15 @@ public class FilmService {
 
     public boolean deleteLike(long filmId, long userId) {
         log.info("Удаление лайка пользователем {} из фильма {}", userId, userId);
+
+        userService.getById(userId);
+
         boolean isDeleted = filmStorage.deleteLike(filmId, userId);
+
         if (isDeleted) {
             log.info("Лайк успешно удален");
         }
+
         eventStorage.addEvent(new Event(
                 System.currentTimeMillis(),
                 userId,
@@ -136,6 +140,7 @@ public class FilmService {
                 null,
                 filmId
         ));
+
         return isDeleted;
     }
 
