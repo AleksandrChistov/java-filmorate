@@ -46,6 +46,14 @@ public class FilmService {
         return mapToFilmsDtos(filmStorage.getAll());
     }
 
+    public List<ResponseFilmDto> getCommonFilms(long userId, long friendId) {
+        log.info("Получение общих любимых фильмов пользователей {} и {}", userId, friendId);
+
+        List<Film> commonFilms = filmStorage.getCommonFilms(userId, friendId);
+
+        return mapToFilmsDtos(commonFilms);
+    }
+
     public ResponseFilmDto getById(long filmId) {
         return filmStorage.getById(filmId)
                 .map(this::mapToFilmDto)

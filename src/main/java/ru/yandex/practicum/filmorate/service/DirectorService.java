@@ -23,7 +23,7 @@ public class DirectorService {
     private final DirectorStorage directorStorage;
 
     public List<DirectorDto> getAll() {
-        log.debug("Получен запрос на получение списка всех фильмов");
+        log.debug("Получен запрос на получение списка всех режиссеров");
         return directorStorage.getAll().stream()
                 .map(DirectorMapper::mapToDirectorDto)
                 .toList();
