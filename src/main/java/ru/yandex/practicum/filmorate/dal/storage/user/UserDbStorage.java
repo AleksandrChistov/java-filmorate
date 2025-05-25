@@ -7,6 +7,7 @@ import ru.yandex.practicum.filmorate.dal.storage.BaseDbStorage;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -21,21 +22,38 @@ public class UserDbStorage extends BaseDbStorage implements UserStorage {
     private static final String INSERT_FRIEND_QUERY = "INSERT INTO friendship (user_id, friend_id) VALUES (?, ?)";
     private static final String DELETE_FRIEND_QUERY = "DELETE FROM friendship WHERE user_id = ? AND friend_id = ?";
     private static final String FIND_ALL_BY_USER_ID_QUERY = "SELECT friend_id FROM friendship WHERE user_id = ?";
+
+    private static final String FIND_USERID_FOR_RECOMMENDATIONS_QUERY =
+            "SELECT fl2.user_id " +
+            "FROM films_likes fl1 " +
+            "JOIN films_likes fl2 ON fl1.film_id = fl2.film_id " +
+            "WHERE fl1.user_id = ? AND fl2.user_id != ? " +
+            "GROUP BY fl2.user_id " +
+            "ORDER BY COUNT(*) DESC " +
+            "LIMIT 1";
     private static final String GET_RECOMMENDATIONS_QUERY =
             "SELECT f.* " +
-            "FROM films AS f " +
-            "JOIN films_likes AS fl ON f.id = fl.film_id " +
-            "WHERE fl.user_id IN (" +
-                "SELECT fl2.user_id " +
-                "FROM films_likes AS fl1 " +
-                "JOIN films_likes AS fl2 ON fl1.film_id = fl2.film_id " +
-                "WHERE fl1.user_id = ? AND fl2.user_id != ? " +
-                "GROUP BY fl2.user_id " +
-                "ORDER BY COUNT(*) DESC " +
-                "LIMIT 1" +
-            ") " +
-            "AND f.id NOT IN (SELECT film_id FROM films_likes WHERE user_id = ?" +
-            ")";
+                    "FROM films f " +
+                    "JOIN films_likes fl ON f.id = fl.film_id " +
+                    "LEFT JOIN films_likes user_likes ON f.id = user_likes.film_id AND user_likes.user_id = ? " +
+                    "WHERE fl.user_id = ? " +
+                    "AND user_likes.film_id IS NULL";
+
+    //private static final String GET_RECOMMENDATIONS_QUERY =
+    //        "SELECT f.* " +
+    //        "FROM films AS f " +
+    //        "JOIN films_likes AS fl ON f.id = fl.film_id " +
+    //        "WHERE fl.user_id = (" +
+    //            "SELECT fl2.user_id " +
+    //            "FROM films_likes AS fl1 " +
+    //            "JOIN films_likes AS fl2 ON fl1.film_id = fl2.film_id " +
+    //            "WHERE fl1.user_id = ? AND fl2.user_id != ? " +
+    //            "GROUP BY fl2.user_id " +
+    //            "ORDER BY COUNT(*) DESC " +
+    //            "LIMIT 1" +
+    //        ") " +
+    //        "AND f.id NOT IN (SELECT film_id FROM films_likes WHERE user_id = ?" +
+    //        ")";
 
     private final RowMapper<User> userMapper;
     private final RowMapper<Film> filmMapper;
@@ -134,7 +152,12 @@ public class UserDbStorage extends BaseDbStorage implements UserStorage {
         return jdbc.queryForList(FIND_ALL_BY_USER_ID_QUERY, Long.class, userId);
     }
 
+    @Override
     public List<Film> getRecommendations(long userId) {
-        return findMany(GET_RECOMMENDATIONS_QUERY, filmMapper, userId, userId, userId);
+        Optional<Long> idUserForRecommendations = findOneLong(FIND_USERID_FOR_RECOMMENDATIONS_QUERY, userId, userId);
+        if (idUserForRecommendations.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return findMany(GET_RECOMMENDATIONS_QUERY, filmMapper, idUserForRecommendations.get(), userId);
     }
 }

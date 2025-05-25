@@ -25,6 +25,15 @@ public class BaseDbStorage {
         }
     }
 
+    protected Optional<Long> findOneLong(String query, Object... params) {
+        try {
+            Long result = jdbc.queryForObject(query, params, Long.class);
+            return Optional.ofNullable(result);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
     protected <T> List<T> findMany(String query, RowMapper<T> mapper, Object... params) {
         return jdbc.query(query, mapper, params);
     }
