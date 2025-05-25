@@ -116,6 +116,11 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> getCommonFilms(long userId, long friendId) {
+        return List.of();
+    }
+
+    @Override
     public List<Film> findPopularFilmsByGenreByYear(int count, Long genreId, Long year) {
         return null;
     }

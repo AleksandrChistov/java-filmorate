@@ -23,6 +23,17 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
             "mpa.id AS mpa_id, mpa.name AS mpa_name, " +
             "FROM films f " +
             "LEFT JOIN mpa ON mpa.id = f.mpa_id";
+    private static final String FIND_COMMON_USERS_FILMS_QUERY = "SELECT " +
+            "f.id, f.name, f.description, f.release_date, f.duration, " +
+            "mpa.id AS mpa_id, mpa.name AS mpa_name, " +
+            "COUNT(fl.film_id) AS likes_count " +
+            "FROM films f " +
+            "JOIN films_likes fl ON f.id = fl.film_id " +
+            "LEFT JOIN mpa ON mpa.id = f.mpa_id " +
+            "WHERE fl.user_id IN (?, ?) " +
+            "GROUP BY f.id " +
+            "HAVING COUNT(DISTINCT fl.user_id) = 2" +
+            "ORDER BY likes_count DESC ";
     private static final String FIND_FILM_WITH_MPA_BY_ID_QUERY = "SELECT " +
             "f.id, f.name, f.description, f.release_date, f.duration, " +
             "mpa.id AS mpa_id, mpa.name AS mpa_name FROM films f " +
@@ -110,6 +121,11 @@ public class FilmDbStorage extends BaseDbStorage<Film> implements FilmStorage {
     @Override
     public List<Film> getAll() {
         return findMany(FIND_ALL_FILMS_WITH_MPA_QUERY, mapper);
+    }
+
+    @Override
+    public List<Film> getCommonFilms(long userId, long friendId) {
+        return findMany(FIND_COMMON_USERS_FILMS_QUERY, mapper, userId, friendId);
     }
 
     @Override

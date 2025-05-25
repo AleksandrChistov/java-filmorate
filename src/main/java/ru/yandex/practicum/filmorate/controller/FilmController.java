@@ -64,6 +64,14 @@ public class FilmController {
         return filmService.findPopularFilms(count, genreId, year);
     }
 
+    @GetMapping("/common")
+    @ResponseStatus(HttpStatus.OK)
+    public List<ResponseFilmDto> findCommonFilms(
+            @RequestParam @Min(1) long userId,
+            @RequestParam @Min(1) long friendId) {
+        return filmService.getCommonFilms(userId, friendId);
+    }
+
     @DeleteMapping("/{filmId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public boolean delete(@PathVariable @Min(1) long filmId) {
