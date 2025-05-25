@@ -146,6 +146,16 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     @Override
+    public List<Film> getFilmsSearchTitle(String substring) {
+        return List.of();
+    }
+
+    @Override
+    public List<Film> getFilmsSearchDirector(String substring) {
+        return List.of();
+    }
+
+    @Override
     public List<Film> getRecommendationsForUser(long userId) {
         return List.of();
     }
