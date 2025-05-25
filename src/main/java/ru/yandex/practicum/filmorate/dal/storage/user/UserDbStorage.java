@@ -4,13 +4,15 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dal.storage.BaseDbStorage;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.User;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 @Repository
-public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
+public class UserDbStorage extends BaseDbStorage implements UserStorage {
     private static final String INSERT_USER_QUERY = "INSERT INTO users (name, login, email, birthday) VALUES (?, ?, ?, ?)";
     private static final String UPDATE_USER_QUERY = "UPDATE users SET name = ?, login = ?, email = ?, birthday = ? WHERE id = ?";
     private static final String DELETE_USER_BY_ID_QUERY = "DELETE FROM users WHERE id = ?";
@@ -21,11 +23,31 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
     private static final String DELETE_FRIEND_QUERY = "DELETE FROM friendship WHERE user_id = ? AND friend_id = ?";
     private static final String FIND_ALL_BY_USER_ID_QUERY = "SELECT friend_id FROM friendship WHERE user_id = ?";
 
-    private final RowMapper<User> userMapper;
+    private static final String FIND_USERID_FOR_RECOMMENDATIONS_QUERY =
+            "SELECT fl2.user_id " +
+                    "FROM films_likes fl1 " +
+                    "JOIN films_likes fl2 ON fl1.film_id = fl2.film_id " +
+                    "WHERE fl1.user_id = ? AND fl2.user_id != ? " +
+                    "GROUP BY fl2.user_id " +
+                    "ORDER BY COUNT(*) DESC " +
+                    "LIMIT 1";
+    private static final String GET_RECOMMENDATIONS_QUERY =
+            "SELECT f.id, f.name, description, release_date, duration, " +
+                    "mpa.id AS mpa_id, mpa.name AS mpa_name, " +
+                    "FROM films f " +
+                    "JOIN films_likes fl ON f.id = fl.film_id " +
+                    "LEFT JOIN mpa ON mpa.id = f.mpa_id " +
+                    "LEFT JOIN films_likes user_likes ON f.id = user_likes.film_id AND user_likes.user_id = ? " +
+                    "WHERE fl.user_id = ? " +
+                    "AND user_likes.film_id IS NULL";
 
-    public UserDbStorage(JdbcTemplate jdbc, RowMapper<User> userMapper) {
+    private final RowMapper<User> userMapper;
+    private final RowMapper<Film> filmMapper;
+
+    public UserDbStorage(JdbcTemplate jdbc, RowMapper<User> userMapper, RowMapper<Film> filmMapper) {
         super(jdbc);
         this.userMapper = userMapper;
+        this.filmMapper = filmMapper;
     }
 
     @Override
@@ -114,5 +136,14 @@ public class UserDbStorage extends BaseDbStorage<User> implements UserStorage {
     @Override
     public List<Long> getFriendsIds(long userId) {
         return jdbc.queryForList(FIND_ALL_BY_USER_ID_QUERY, Long.class, userId);
+    }
+
+    @Override
+    public List<Film> getRecommendations(long userId) {
+        Optional<Long> idUserForRecommendations = findOneLong(FIND_USERID_FOR_RECOMMENDATIONS_QUERY, userId, userId);
+        if (idUserForRecommendations.isEmpty()) {
+            return Collections.emptyList();
+        }
+        return findMany(GET_RECOMMENDATIONS_QUERY, filmMapper, userId, idUserForRecommendations.get());
     }
 }
