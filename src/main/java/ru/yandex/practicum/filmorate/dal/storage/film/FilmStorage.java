@@ -29,5 +29,9 @@ public interface FilmStorage extends Storage<Film> {
 
     List<Film> getFilmsDirectorYear(Long directorId);
 
+    List<Film> getFilmsSearchTitle(String substring);
+
+    List<Film> getFilmsSearchDirector(String substring);
+
     List<Film> getRecommendationsForUser(long userId);
 }
