@@ -175,7 +175,7 @@ public class FilmService {
         }
     }
 
-    private ResponseFilmDto mapToFilmDto(Film film) {
+    public ResponseFilmDto mapToFilmDto(Film film) {
 
         Set<GenreDto> genreDtos = genreService.getAllByFilmId(film.getId());
         Set<Long> likes = new HashSet<>(filmStorage.getLikesByFilmId(film.getId()));
@@ -188,7 +188,7 @@ public class FilmService {
         return FilmMapper.mapToFilmDto(film);
     }
 
-    private List<ResponseFilmDto> mapToFilmsDtos(List<Film> films) {
+    public List<ResponseFilmDto> mapToFilmsDtos(List<Film> films) {
         List<Long> filmsIds = films.stream().map(Film::getId).toList();
 
         Map<Long, Set<Genre>> filmIdToGenresMap = genreService.getAllByFilmIds(filmsIds);

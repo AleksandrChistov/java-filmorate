@@ -13,10 +13,10 @@ import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
-public class BaseDbStorage<T> {
+public class BaseDbStorage {
     protected final JdbcTemplate jdbc;
 
-    protected Optional<T> findOne(String query, RowMapper<T> mapper, Object... params) {
+    protected <T> Optional<T> findOne(String query, RowMapper<T> mapper, Object... params) {
         try {
             T result = jdbc.queryForObject(query, mapper, params);
             return Optional.ofNullable(result);
@@ -25,7 +25,16 @@ public class BaseDbStorage<T> {
         }
     }
 
-    protected List<T> findMany(String query, RowMapper<T> mapper, Object... params) {
+    protected Optional<Long> findOneLong(String query, Object... params) {
+        try {
+            Long result = jdbc.queryForObject(query, params, Long.class);
+            return Optional.ofNullable(result);
+        } catch (EmptyResultDataAccessException e) {
+            return Optional.empty();
+        }
+    }
+
+    protected <T> List<T> findMany(String query, RowMapper<T> mapper, Object... params) {
         return jdbc.query(query, mapper, params);
     }
 

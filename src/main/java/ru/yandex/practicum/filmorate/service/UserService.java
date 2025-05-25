@@ -12,8 +12,10 @@ import ru.yandex.practicum.filmorate.enums.EventType;
 import ru.yandex.practicum.filmorate.enums.Operation;
 import ru.yandex.practicum.filmorate.excepton.NotFoundException;
 import ru.yandex.practicum.filmorate.mapper.UserMapper;
+import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.model.Event;
 import ru.yandex.practicum.filmorate.model.User;
+import ru.yandex.practicum.filmorate.dal.dto.ResponseFilmDto;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,10 +25,13 @@ import java.util.stream.Collectors;
 public class UserService {
     private final UserStorage userStorage;
     private final EventStorage eventStorage;
+    private final FilmService filmService;
 
-    public UserService(@Qualifier("userDbStorage") UserStorage userStorage, EventStorage eventStorage) {
+    public UserService(@Qualifier("userDbStorage") UserStorage userStorage, EventStorage eventStorage, FilmService filmService) {
         this.userStorage = userStorage;
         this.eventStorage = eventStorage;
+        this.filmService = filmService;
+
     }
 
     public List<UserDto> getAll() {
@@ -147,5 +152,10 @@ public class UserService {
         userStorage.getById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id = " + userId + " не найден."));
         return eventStorage.getFeedByUserId(userId);
+    }
+
+    public List<ResponseFilmDto> getRecommendations(long userId) {
+        List<Film> films = userStorage.getRecommendations(userId);
+        return filmService.mapToFilmsDtos(films);
     }
 }
