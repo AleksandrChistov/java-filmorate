@@ -12,11 +12,11 @@ import java.util.Optional;
 @Repository
 public class EventDbStorage extends BaseDbStorage implements EventStorage {
 
-    String ADD_EVENT = """
+    private static final String ADD_EVENT = """
             INSERT INTO events (user_id, event_type, operation, entity_id, timestamp)
             VALUES (?, ?, ?, ?, ?)
             """;
-    String GET_EVENT = "SELECT * FROM events WHERE user_id = ? ORDER BY timestamp";
+    private static final String GET_EVENT = "SELECT * FROM events WHERE user_id = ? ORDER BY timestamp";
 
     private final RowMapper<Event> mapper;
 
