@@ -112,7 +112,7 @@ public class FilmDbStorage extends BaseDbStorage implements FilmStorage {
             "FROM films f " +
             "JOIN mpa m ON f.mpa_id = m.id " +
             "LEFT JOIN films_likes fl ON f.id = fl.film_id " +
-            "WHERE f.name LIKE '%' || ? || '%' " +
+            "WHERE LOWER(f.name) LIKE ('%' || ? || '%') " +
             "GROUP BY f.id " +
             "ORDER BY likes_count DESC";
     private static final String FIND_FILMS_BY_SEARCH_DIRECTOR = "SELECT f.id, f.name, f.description," +
@@ -122,7 +122,8 @@ public class FilmDbStorage extends BaseDbStorage implements FilmStorage {
             "LEFT JOIN films_likes fl ON f.id = fl.film_id " +
             "JOIN films_directors fd ON f.id = fd.film_id " +
             "JOIN directors d ON fd.director_id = d.id " +
-            "WHERE d.name LIKE '%' || ? || '%' " +
+            "WHERE LOWER(d.name) LIKE ('%' || ? || '%') " +
+            "GROUP BY f.id " +
             "ORDER BY likes_count DESC";
     private static final String FIND_USERID_FOR_RECOMMENDATIONS_QUERY =
             "SELECT fl2.user_id " +

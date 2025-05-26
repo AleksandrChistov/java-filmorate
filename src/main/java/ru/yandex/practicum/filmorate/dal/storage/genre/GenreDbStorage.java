@@ -17,7 +17,7 @@ public class GenreDbStorage extends BaseDbStorage implements GenreStorage {
     private static final String FIND_ALL_GENRES_QUERY = "SELECT * FROM genres";
     private static final String FIND_GENRE_BY_ID_QUERY = "SELECT * FROM genres WHERE id = ?";
     private static final String FIND_GENRES_BY_FILM_IDS_QUERY = "SELECT " +
-            "g.id AS id, g.name AS name, fg.film_id " +
+            "g.id AS id, g.name AS name, fg.film_id AS film_id " +
             "FROM films_genres fg " +
             "JOIN genres g ON g.id = fg.genre_id " +
             "WHERE fg.film_id IN (:filmsIds) " +
@@ -28,6 +28,7 @@ public class GenreDbStorage extends BaseDbStorage implements GenreStorage {
             "JOIN genres g ON g.id = fg.genre_id " +
             "WHERE fg.film_id = ? " +
             "ORDER BY g.id";
+    private static final String DELETE_GENRES_BY_FILM_ID_QUERY = "DELETE FROM films_genres WHERE film_id = ?";
 
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
 
@@ -51,6 +52,11 @@ public class GenreDbStorage extends BaseDbStorage implements GenreStorage {
         int[] affectedRows = jdbc.batchUpdate(INSERT_GENRES_BY_FILM_ID_QUERY, batch);
 
         return affectedRows.length;
+    }
+
+    @Override
+    public boolean deleteGenresByFilmId(long filmId) {
+        return delete(DELETE_GENRES_BY_FILM_ID_QUERY, filmId);
     }
 
     @Override

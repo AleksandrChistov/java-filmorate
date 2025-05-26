@@ -37,7 +37,7 @@ public class DirectorController {
     }
 
     @PutMapping
-    @ResponseStatus(HttpStatus.CREATED)
+    @ResponseStatus(HttpStatus.OK)
     public DirectorDto update(@RequestBody @Validated DirectorDto directorDto) {
         return directorService.update(directorDto);
     }

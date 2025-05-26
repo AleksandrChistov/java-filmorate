@@ -50,6 +50,10 @@ public class DirectorService {
         directorStorage.remove(directorId);
     }
 
+    public void removeByFilmId(long filmId) {
+        directorStorage.removeByFilmId(filmId);
+    }
+
     public DirectorDto getById(Long directorId) {
         return directorStorage.getById(directorId)
                 .map(DirectorMapper::mapToDirectorDto)
