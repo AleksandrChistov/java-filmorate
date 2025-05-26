@@ -69,12 +69,12 @@ public class FilmService {
 
         log.info("Фильм успешно добавлен, id = {}", film.getId());
 
-        if (newFilm.getGenres() != null) {
+        if (newFilm.getGenres() != null && !newFilm.getGenres().isEmpty()) {
             Set<Long> genresIds = newFilm.getGenres().stream().map(GenreDto::getId).collect(Collectors.toSet());
             genreService.addGenresByFilmId(genresIds, film.getId());
         }
 
-        if (newFilm.getDirectors() != null) {
+        if (newFilm.getDirectors() != null && !newFilm.getDirectors().isEmpty()) {
             directorService.addDirectorsByFilmId(film);
         }
 
@@ -94,7 +94,18 @@ public class FilmService {
 
         updatedFilm = filmStorage.update(updatedFilm);
 
-        if (newFilm.getDirectors() != null) {
+        if (newFilm.getGenres() != null) {
+            genreService.deleteGenresByFilmId(updatedFilm.getId());
+
+            if (!newFilm.getGenres().isEmpty()) {
+                Set<Long> genresIds = newFilm.getGenres().stream().map(GenreDto::getId).collect(Collectors.toSet());
+                genreService.addGenresByFilmId(genresIds, updatedFilm.getId());
+            }
+        }
+
+        directorService.removeByFilmId(updatedFilm.getId());
+
+        if (newFilm.getDirectors() != null && !newFilm.getDirectors().isEmpty()) {
             directorService.addDirectorsByFilmId(updatedFilm);
         }
 
@@ -165,6 +176,8 @@ public class FilmService {
     }
 
     public List<ResponseFilmDto> getFilmsDirectorById(Long directorId, String sortBy) {
+        directorService.getById(directorId);
+
         if (sortBy.equalsIgnoreCase("likes")) {
             log.info("Получение списка фильмов режиссера с id = {}, отсортированным по количеству лайков", directorId);
             List<Film> films = filmStorage.getFilmsDirectorLikes(directorId);
@@ -182,19 +195,20 @@ public class FilmService {
 
     public List<ResponseFilmDto> getFilmsFromSearch(String query, String by) {
         if (by.equalsIgnoreCase("title")) {
-            List<Film> films = filmStorage.getFilmsSearchTitle(query);
+            List<Film> films = filmStorage.getFilmsSearchTitle(query.toLowerCase());
             return mapToFilmsDtos(films);
         } else if (by.equalsIgnoreCase("director")) {
-            List<Film> films = filmStorage.getFilmsSearchDirector(query);
+            List<Film> films = filmStorage.getFilmsSearchDirector(query.toLowerCase());
             return mapToFilmsDtos(films);
-        } else if (by.equalsIgnoreCase("title,director") || by.equalsIgnoreCase("director, title")) {
-            List<Film> films = filmStorage.getFilmsSearchTitle(query);
-            films.addAll(filmStorage.getFilmsSearchDirector(query));
-            return mapToFilmsDtos(films);
+        } else if (by.equalsIgnoreCase("title,director") || by.equalsIgnoreCase("director,title")) {
+            List<Film> films = filmStorage.getFilmsSearchTitle(query.toLowerCase());
+            films.addAll(filmStorage.getFilmsSearchDirector(query.toLowerCase()));
+            return mapToFilmsDtos(films).stream()
+                    .sorted(Comparator.comparing((ResponseFilmDto f) -> f.getLikes().size()).reversed())
+                    .collect(Collectors.toList());
         } else {
             return List.of();
         }
-
     }
 
     public List<ResponseFilmDto> getRecommendationsForUser(long userId) {

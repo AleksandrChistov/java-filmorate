@@ -11,6 +11,8 @@ public interface GenreStorage {
 
     int addGenresByFilmId(Set<Long> genresIds, long filmId);
 
+    boolean deleteGenresByFilmId(long filmId);
+
     List<Genre> getAll();
 
     Optional<Genre> getById(long genreId);

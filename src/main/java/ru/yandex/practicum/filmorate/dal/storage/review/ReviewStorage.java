@@ -13,7 +13,11 @@ public interface ReviewStorage extends Storage<Review> {
 
     Optional<Review> getById(long reviewId);
 
+    Optional<Boolean> getMadeLikeByReviewIdAndUserId(long reviewId, long userId);
+
     Review add(Review review);
+
+    Boolean addLikeToReview(long reviewId, long userId, boolean isLIke);
 
     Review update(Review review);
 

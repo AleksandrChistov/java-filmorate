@@ -19,6 +19,8 @@ public interface DirectorStorage {
 
     void remove(Long id);
 
+    void removeByFilmId(long filmId);
+
     Optional<Director> getById(Long id);
 
     Map<Long, Set<Director>> getAllByFilmIds(List<Long> filmsIds);

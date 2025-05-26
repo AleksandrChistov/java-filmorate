@@ -51,14 +51,16 @@ public class ReviewService {
         }
 
         Review createdReview = reviewStorage.add(newReview);
+
         eventStorage.addEvent(new Event(
                 System.currentTimeMillis(),
-                newReview.getUserId(),
+                createdReview.getUserId(),
                 EventType.REVIEW,
                 Operation.ADD,
                 null,
-                newReview.getReviewId()
+                createdReview.getReviewId()
         ));
+
         log.info("Отзыв успешно добавлен, id = {}", createdReview.getReviewId());
 
         return createdReview;
@@ -72,14 +74,16 @@ public class ReviewService {
                 .orElseThrow(() -> new NotFoundException("Отзыв с id = " + newReview.getReviewId() + " не найден."));
 
         updatedReview = reviewStorage.update(updatedReview);
+
         eventStorage.addEvent(new Event(
                 System.currentTimeMillis(),
-                newReview.getUserId(),
+                updatedReview.getUserId(),
                 EventType.REVIEW,
                 Operation.UPDATE,
                 null,
-                newReview.getReviewId()
+                updatedReview.getReviewId()
         ));
+
         log.info("Отзыв успешно обновлен, id = {}", updatedReview.getReviewId());
 
         return updatedReview;
@@ -87,9 +91,12 @@ public class ReviewService {
 
     public boolean delete(long reviewId) {
         log.info("Удаление отзыва с id = {}", reviewId);
+
         Review reviewToDelete = reviewStorage.getById(reviewId)
                 .orElseThrow(() -> new NotFoundException("Отзыв с id = " + reviewId + " не найден."));
+
         boolean isDeleted = reviewStorage.delete(reviewId);
+
         if (isDeleted) {
             eventStorage.addEvent(new Event(
                     System.currentTimeMillis(),
@@ -101,33 +108,26 @@ public class ReviewService {
             ));
             log.info("Отзыв успешно удалён, id = {}", reviewId);
         }
+
         return isDeleted;
     }
 
     public void addLike(long reviewId, long userId) {
         log.info("Добавление лайка к отзыву с id = {}, пользователем с id = {}", reviewId, userId);
 
-        Optional<Event> event = eventStorage.getLastEventByReviewIdAndUserId(reviewId, userId);
+        Optional<Boolean> madeLike = reviewStorage.getMadeLikeByReviewIdAndUserId(reviewId, userId);
 
-        event.ifPresentOrElse(
-                e -> {
-                    boolean madeDislike = e.getOperation().equals(Operation.ADD) && e.getEventType().equals(EventType.DISLIKE);
-                    if (madeDislike) {
-                        updateRating(reviewId, oldRating -> oldRating + 2);
-                    } else {
+        madeLike.ifPresentOrElse(
+                isLike -> {
+                    if (isLike) {
                         updateRating(reviewId, oldRating -> oldRating + 1);
+                    } else {
+                        updateRating(reviewId, oldRating -> oldRating + 2);
                     }
                 },
                 () -> updateRating(reviewId, oldRating -> oldRating + 1));
 
-        eventStorage.addEvent(new Event(
-                System.currentTimeMillis(),
-                userId,
-                EventType.LIKE,
-                Operation.ADD,
-                null,
-                reviewId
-        ));
+        reviewStorage.addLikeToReview(reviewId, userId, true);
 
         log.info("Лайк успешно добавлен");
     }
@@ -135,12 +135,11 @@ public class ReviewService {
     public void addDislike(long reviewId, long userId) {
         log.info("Добавление дизлайка к отзыву с id = {}, пользователем с id = {}", reviewId, userId);
 
-        Optional<Event> event = eventStorage.getLastEventByReviewIdAndUserId(reviewId, userId);
+        Optional<Boolean> madeLike = reviewStorage.getMadeLikeByReviewIdAndUserId(reviewId, userId);
 
-        event.ifPresentOrElse(
-                e -> {
-                    boolean madeLike = e.getOperation().equals(Operation.ADD) && e.getEventType().equals(EventType.LIKE);
-                    if (madeLike) {
+        madeLike.ifPresentOrElse(
+                isLike -> {
+                    if (isLike) {
                         updateRating(reviewId, oldRating -> oldRating - 2);
                     } else {
                         updateRating(reviewId, oldRating -> oldRating - 1);
@@ -148,14 +147,7 @@ public class ReviewService {
                 },
                 () -> updateRating(reviewId, oldRating -> oldRating - 1));
 
-        eventStorage.addEvent(new Event(
-                System.currentTimeMillis(),
-                userId,
-                EventType.DISLIKE,
-                Operation.ADD,
-                null,
-                reviewId
-        ));
+        reviewStorage.addLikeToReview(reviewId, userId, false);
 
         log.info("Дизлайк успешно добавлен");
     }
@@ -163,32 +155,12 @@ public class ReviewService {
     public void deleteLike(long reviewId, long userId) {
         log.info("Удаление лайка из отзыва с id = {}, пользователем с id = {}", reviewId, userId);
         updateRating(reviewId, oldRating -> oldRating - 1);
-
-        eventStorage.addEvent(new Event(
-                System.currentTimeMillis(),
-                userId,
-                EventType.LIKE,
-                Operation.REMOVE,
-                null,
-                reviewId
-        ));
-
         log.info("Лайк успешно удален");
     }
 
     public void deleteDislike(long reviewId, long userId) {
         log.info("Удаление дизлайка из отзыва с id = {}, пользователем с id = {}", reviewId, userId);
         updateRating(reviewId, oldRating -> oldRating + 1);
-
-        eventStorage.addEvent(new Event(
-                System.currentTimeMillis(),
-                userId,
-                EventType.DISLIKE,
-                Operation.REMOVE,
-                null,
-                reviewId
-        ));
-
         log.info("Дизлайк успешно удален");
     }
 
