@@ -18,9 +18,6 @@ public class EventDbStorage extends BaseDbStorage implements EventStorage {
             """;
     private static final String GET_EVENT = "SELECT * FROM events WHERE user_id = ? ORDER BY timestamp";
 
-    private static final String GET_EVENT_BY_REVIEW_ID_AND_USER_ID =
-            "SELECT * FROM events WHERE entity_id = ? AND user_id = ? ORDER BY timestamp DESC LIMIT 1";
-
     private final RowMapper<Event> mapper;
 
     public EventDbStorage(JdbcTemplate jdbc, RowMapper<Event> mapper) {
@@ -44,11 +41,6 @@ public class EventDbStorage extends BaseDbStorage implements EventStorage {
     @Override
     public List<Event> getFeedByUserId(Long userId) {
         return jdbc.query(GET_EVENT, mapper, userId);
-    }
-
-    @Override
-    public Optional<Event> getLastEventByReviewIdAndUserId(long reviewId, long userId) {
-        return findOne(GET_EVENT_BY_REVIEW_ID_AND_USER_ID, mapper, reviewId, userId);
     }
 
     @Override
