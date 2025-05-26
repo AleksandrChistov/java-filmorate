@@ -31,6 +31,7 @@ public class DirectorDbStorage extends BaseDbStorage implements DirectorStorage 
             "JOIN directors AS d ON d.id = fd.director_id " +
             "WHERE fd.film_id = ? " +
             "ORDER BY d.id";
+    private static final String DELETE_FILMS_DIRECTORS_BY_FILM_ID_QUERY = "DELETE FROM films_directors WHERE film_id = ?";
 
     private final DirectorRowMapper mapper;
     private final NamedParameterJdbcTemplate namedParameterJdbcTemplate;
@@ -70,7 +71,11 @@ public class DirectorDbStorage extends BaseDbStorage implements DirectorStorage 
     @Override
     public void remove(Long id) {
         jdbc.update(DELETE_DIRECTOR_BY_ID_QUERY, id);
+    }
 
+    @Override
+    public void removeByFilmId(long filmId) {
+        jdbc.update(DELETE_FILMS_DIRECTORS_BY_FILM_ID_QUERY, filmId);
     }
 
     @Override

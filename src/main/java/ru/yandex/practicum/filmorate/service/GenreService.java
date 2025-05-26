@@ -28,6 +28,10 @@ public class GenreService {
         return genreStorage.addGenresByFilmId(genresIds, filmId);
     }
 
+    public boolean deleteGenresByFilmId(long filmId) {
+        return genreStorage.deleteGenresByFilmId(filmId);
+    }
+
     public List<GenreDto> getAll() {
         return genreStorage.getAll().stream()
                 .map(GenreMapper::mapToGenreDto)

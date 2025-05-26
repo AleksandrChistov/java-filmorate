@@ -27,11 +27,18 @@ public class ReviewDbStorage extends BaseDbStorage implements ReviewStorage {
 
     private static final String DELETE_REVIEW_BY_ID_QUERY = "DELETE FROM reviews WHERE id = ?";
 
-    private final RowMapper<Review> mapper;
+    private static final String GET_EVENT_BY_REVIEW_ID_AND_USER_ID =
+            "SELECT is_like FROM reviews_likes WHERE review_id = ? AND user_id = ?";
 
-    public ReviewDbStorage(JdbcTemplate jdbc, RowMapper<Review> mapper) {
+    private static final String INSERT_LIKE_TO_REVIEW_QUERY = "INSERT INTO reviews_likes (review_id, user_id, is_like) VALUES (?, ?, ?)";
+
+    private final RowMapper<Review> mapper;
+    private final RowMapper<Boolean> reviewsLikesMapper;
+
+    public ReviewDbStorage(JdbcTemplate jdbc, RowMapper<Review> mapper, RowMapper<Boolean> reviewsLikesMapper) {
         super(jdbc);
         this.mapper = mapper;
+        this.reviewsLikesMapper = reviewsLikesMapper;
     }
 
     @Override
@@ -55,6 +62,11 @@ public class ReviewDbStorage extends BaseDbStorage implements ReviewStorage {
     }
 
     @Override
+    public Optional<Boolean> getMadeLikeByReviewIdAndUserId(long reviewId, long userId) {
+        return findOne(GET_EVENT_BY_REVIEW_ID_AND_USER_ID, reviewsLikesMapper, reviewId, userId);
+    }
+
+    @Override
     public Review add(Review newReview) {
         long id = insert(
                 INSERT_REVIEW_QUERY,
@@ -66,6 +78,18 @@ public class ReviewDbStorage extends BaseDbStorage implements ReviewStorage {
         );
         newReview.setReviewId(id);
         return newReview;
+    }
+
+    @Override
+    public Boolean addLikeToReview(long reviewId, long userId, boolean isLIke) {
+        long id = insert(
+                INSERT_LIKE_TO_REVIEW_QUERY,
+                reviewId,
+                userId,
+                isLIke
+        );
+
+        return id > 0;
     }
 
     @Override
