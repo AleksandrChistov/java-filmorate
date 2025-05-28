@@ -10,10 +10,9 @@ import lombok.EqualsAndHashCode;
 import ru.yandex.practicum.filmorate.validation.ReleaseDate;
 
 import java.time.LocalDate;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
+
 
 @Data
 @AllArgsConstructor
