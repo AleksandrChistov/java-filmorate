@@ -52,7 +52,7 @@ public class ReviewService {
 
         Review createdReview = reviewStorage.add(newReview);
 
-        eventStorage.addEvent(new Event(
+        eventStorage.add(new Event(
                 System.currentTimeMillis(),
                 createdReview.getUserId(),
                 EventType.REVIEW,
@@ -75,7 +75,7 @@ public class ReviewService {
 
         updatedReview = reviewStorage.update(updatedReview);
 
-        eventStorage.addEvent(new Event(
+        eventStorage.add(new Event(
                 System.currentTimeMillis(),
                 updatedReview.getUserId(),
                 EventType.REVIEW,
@@ -98,7 +98,7 @@ public class ReviewService {
         boolean isDeleted = reviewStorage.delete(reviewId);
 
         if (isDeleted) {
-            eventStorage.addEvent(new Event(
+            eventStorage.add(new Event(
                     System.currentTimeMillis(),
                     reviewToDelete.getUserId(),
                     EventType.REVIEW,

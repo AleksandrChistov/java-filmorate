@@ -4,6 +4,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.dal.storage.BaseDbStorage;
+import ru.yandex.practicum.filmorate.excepton.DevelopmentException;
 import ru.yandex.practicum.filmorate.model.Event;
 
 import java.util.List;
@@ -26,7 +27,7 @@ public class EventDbStorage extends BaseDbStorage implements EventStorage {
     }
 
     @Override
-    public Event addEvent(Event event) {
+    public Event add(Event event) {
         long eventId = insert(ADD_EVENT,
                 event.getUserId(),
                 event.getEventType().toString(),
@@ -54,13 +55,8 @@ public class EventDbStorage extends BaseDbStorage implements EventStorage {
     }
 
     @Override
-    public Event add(Event entity) {
-        return null;
-    }
-
-    @Override
     public Event update(Event entity) {
-        return null;
+        throw new DevelopmentException("Данный метод не используется");
     }
 
     @Override
