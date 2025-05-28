@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.dto.MpaDto;
 import ru.yandex.practicum.filmorate.dal.storage.mpa.MpaStorage;
@@ -16,7 +15,7 @@ import java.util.stream.Collectors;
 public class MpaService {
     private final MpaStorage mpaStorage;
 
-    public MpaService(@Qualifier("mpaDbStorage") MpaStorage mpaStorage) {
+    public MpaService(MpaStorage mpaStorage) {
         this.mpaStorage = mpaStorage;
     }
 
