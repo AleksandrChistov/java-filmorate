@@ -120,7 +120,7 @@ public class FilmService {
     public void addLike(long filmId, long userId) {
         log.info("Добавление лайка пользователем {} к фильму {}", userId, filmId);
         filmStorage.addLike(filmId, userId);
-        eventStorage.addEvent(new Event(
+        eventStorage.add(new Event(
                 System.currentTimeMillis(),
                 userId,
                 EventType.LIKE,
@@ -142,7 +142,7 @@ public class FilmService {
             log.info("Лайк успешно удален");
         }
 
-        eventStorage.addEvent(new Event(
+        eventStorage.add(new Event(
                 System.currentTimeMillis(),
                 userId,
                 EventType.LIKE,

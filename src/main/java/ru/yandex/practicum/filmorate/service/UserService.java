@@ -88,7 +88,7 @@ public class UserService {
         findUser(userId);
         findUser(friendId);
         userStorage.addFriend(userId, friendId);
-        eventStorage.addEvent(new Event(
+        eventStorage.add(new Event(
                 System.currentTimeMillis(),
                 userId,
                 EventType.FRIEND,
@@ -106,7 +106,7 @@ public class UserService {
         findUser(friendId);
 
         boolean isDeleted = userStorage.deleteFriend(userId, friendId);
-        eventStorage.addEvent(new Event(
+        eventStorage.add(new Event(
                 System.currentTimeMillis(),
                 userId,
                 EventType.FRIEND,
