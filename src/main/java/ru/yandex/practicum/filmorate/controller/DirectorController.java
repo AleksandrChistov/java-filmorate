@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -26,7 +26,7 @@ public class DirectorController {
 
     @GetMapping("/{directorId}")
     @ResponseStatus(HttpStatus.OK)
-    public DirectorDto getById(@PathVariable @Min(1) Long directorId) {
+    public DirectorDto getById(@PathVariable @Positive Long directorId) {
         return directorService.getById(directorId);
     }
 
@@ -44,7 +44,7 @@ public class DirectorController {
 
     @DeleteMapping("/{directorId}")
     @ResponseStatus(HttpStatus.OK)
-    public void remove(@PathVariable @Min(1) Long directorId) {
+    public void remove(@PathVariable @Positive Long directorId) {
         directorService.remove(directorId);
     }
 }

@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -28,7 +28,7 @@ public class FilmController {
 
     @GetMapping("/{filmId}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseFilmDto findById(@PathVariable @Min(1) long filmId) {
+    public ResponseFilmDto findById(@PathVariable @Positive Long filmId) {
         return filmService.getById(filmId);
     }
 
@@ -46,13 +46,13 @@ public class FilmController {
 
     @PutMapping("/{filmId}/like/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public void addLike(@PathVariable @Min(1) long filmId, @PathVariable @Min(1) long userId) {
+    public void addLike(@PathVariable @Positive Long filmId, @PathVariable @Positive Long userId) {
         filmService.addLike(filmId, userId);
     }
 
     @DeleteMapping("/{filmId}/like/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public boolean deleteLike(@PathVariable long filmId, @PathVariable long userId) {
+    public boolean deleteLike(@PathVariable Long filmId, @PathVariable Long userId) {
         return filmService.deleteLike(filmId, userId);
     }
 
@@ -67,20 +67,20 @@ public class FilmController {
     @GetMapping("/common")
     @ResponseStatus(HttpStatus.OK)
     public List<ResponseFilmDto> findCommonFilms(
-            @RequestParam @Min(1) long userId,
-            @RequestParam @Min(1) long friendId) {
+            @RequestParam @Positive Long userId,
+            @RequestParam @Positive Long friendId) {
         return filmService.getCommonFilms(userId, friendId);
     }
 
     @DeleteMapping("/{filmId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public boolean delete(@PathVariable @Min(1) long filmId) {
+    public boolean delete(@PathVariable @Positive Long filmId) {
         return filmService.delete(filmId);
     }
 
     @GetMapping("/director/{directorId}")
     @ResponseStatus(HttpStatus.OK)
-    public List<ResponseFilmDto> getAllFilmsDirector(@PathVariable @Min(1) Long directorId,
+    public List<ResponseFilmDto> getAllFilmsDirector(@PathVariable @Positive Long directorId,
                                                  @RequestParam String sortBy) {
         return filmService.getFilmsDirectorById(directorId, sortBy);
     }

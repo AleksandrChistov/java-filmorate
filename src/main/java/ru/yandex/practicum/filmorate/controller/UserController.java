@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -32,7 +32,7 @@ public class UserController {
 
     @GetMapping("/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public UserDto findById(@PathVariable @Min(1) long userId) {
+    public UserDto findById(@PathVariable @Positive Long userId) {
         return userService.getById(userId);
     }
 
@@ -50,43 +50,43 @@ public class UserController {
 
     @PutMapping("/{userId}/friends/{friendId}")
     @ResponseStatus(HttpStatus.OK)
-    public void addFriend(@PathVariable long userId, @PathVariable long friendId) {
+    public void addFriend(@PathVariable Long userId, @PathVariable Long friendId) {
         userService.addFriend(userId, friendId);
     }
 
     @DeleteMapping("/{userId}/friends/{friendId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public boolean deleteFriend(@PathVariable @Min(1) long userId, @PathVariable @Min(1) long friendId) {
+    public boolean deleteFriend(@PathVariable @Positive Long userId, @PathVariable @Positive Long friendId) {
         return userService.deleteFriend(userId, friendId);
     }
 
     @GetMapping("/{userId}/friends")
     @ResponseStatus(HttpStatus.OK)
-    public List<UserDto> getFriends(@PathVariable @Min(1) long userId) {
+    public List<UserDto> getFriends(@PathVariable @Positive Long userId) {
         return userService.getFriends(userId);
     }
 
     @GetMapping("/{userId}/friends/common/{otherId}")
     @ResponseStatus(HttpStatus.OK)
-    public List<UserDto> getCommonFriends(@PathVariable @Min(1) long userId, @PathVariable @Min(1) long otherId) {
+    public List<UserDto> getCommonFriends(@PathVariable @Positive Long userId, @PathVariable @Positive Long otherId) {
         return userService.getCommonFriends(userId, otherId);
     }
 
     @DeleteMapping("/{userId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public boolean delete(@PathVariable @Min(1) long userId) {
+    public boolean delete(@PathVariable @Positive Long userId) {
         return userService.delete(userId);
     }
 
     @GetMapping("/{userId}/feed")
     @ResponseStatus(HttpStatus.OK)
-    public List<Event> getEvent(@PathVariable @Min(1) long userId) {
+    public List<Event> getEvent(@PathVariable @Positive Long userId) {
         return userService.getEvent(userId);
     }
 
     @GetMapping("/{userId}/recommendations")
     @ResponseStatus(HttpStatus.OK)
-    public List<ResponseFilmDto> getRecommendations(@PathVariable @Min(1) long userId) {
+    public List<ResponseFilmDto> getRecommendations(@PathVariable @Positive Long userId) {
         return filmService.getRecommendationsForUser(userId);
     }
 }

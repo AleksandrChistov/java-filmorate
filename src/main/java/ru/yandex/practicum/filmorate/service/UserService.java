@@ -1,6 +1,5 @@
 package ru.yandex.practicum.filmorate.service;
 
-import jakarta.validation.constraints.Min;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.dto.NewUserDto;
@@ -142,7 +141,7 @@ public class UserService {
                 .orElseThrow(() -> new NotFoundException("Пользователь с id = " + userId + " не найден."));
     }
 
-    public List<Event> getEvent(@Min(1) long userId) {
+    public List<Event> getEvent(long userId) {
         userStorage.getById(userId)
                 .orElseThrow(() -> new NotFoundException("Пользователь с id = " + userId + " не найден."));
         return eventStorage.getFeedByUserId(userId);
