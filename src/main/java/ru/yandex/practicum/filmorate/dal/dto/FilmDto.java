@@ -10,7 +10,10 @@ import lombok.EqualsAndHashCode;
 import ru.yandex.practicum.filmorate.validation.ReleaseDate;
 
 import java.time.LocalDate;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.TreeSet;
 
 @Data
 @AllArgsConstructor
@@ -29,6 +32,6 @@ public class FilmDto {
     private Integer duration;
     @NotNull
     private MpaDto mpa;
-    private Set<GenreDto> genres;
-    private Set<DirectorDto> directors;
+    private final Set<GenreDto> genres = new HashSet<>();
+    private final Set<DirectorDto> directors = new HashSet<>();
 }
