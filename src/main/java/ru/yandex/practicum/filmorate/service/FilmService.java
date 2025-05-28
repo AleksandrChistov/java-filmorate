@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.dto.*;
 import ru.yandex.practicum.filmorate.dal.storage.event.EventStorage;
@@ -31,7 +30,7 @@ public class FilmService {
     private final UserService userService;
 
     public FilmService(
-            @Qualifier("filmDbStorage") FilmStorage filmStorage, GenreService genreService, MpaService mpaService,
+            FilmStorage filmStorage, GenreService genreService, MpaService mpaService,
             EventStorage eventStorage, DirectorService directorService, UserService userService) {
         this.filmStorage = filmStorage;
         this.genreService = genreService;
