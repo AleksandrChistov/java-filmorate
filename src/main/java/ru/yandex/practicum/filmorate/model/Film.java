@@ -1,14 +1,12 @@
 package ru.yandex.practicum.filmorate.model;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.Getter;
 import ru.yandex.practicum.filmorate.dal.dto.DirectorDto;
 import ru.yandex.practicum.filmorate.dal.dto.GenreDto;
 import ru.yandex.practicum.filmorate.dal.dto.MpaDto;
-import ru.yandex.practicum.filmorate.validation.ReleaseDate;
 
 import java.time.LocalDate;
 import java.util.Comparator;
@@ -19,19 +17,11 @@ import java.util.TreeSet;
 @Data
 @AllArgsConstructor
 public class Film {
-    @NotNull
     private Long id;
-    @NotBlank
     private String name;
-    @NotBlank
-    @Size(max = 200)
     private String description;
-    @ReleaseDate
     private LocalDate releaseDate;
-    @NotNull
-    @Positive
     private int duration;
-    @NotNull
     private MpaDto mpa;
     @Getter(AccessLevel.NONE)
     private final Set<GenreDto> genres = new TreeSet<>(Comparator.comparing(GenreDto::getId));
