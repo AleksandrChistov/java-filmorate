@@ -1,6 +1,6 @@
 package ru.yandex.practicum.filmorate.controller;
 
-import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Positive;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -29,7 +29,7 @@ public class ReviewController {
 
     @GetMapping("/{reviewId}")
     @ResponseStatus(HttpStatus.OK)
-    public Review findById(@PathVariable @Min(1) long reviewId) {
+    public Review findById(@PathVariable @Positive Long reviewId) {
         return reviewService.getById(reviewId);
     }
 
@@ -48,31 +48,31 @@ public class ReviewController {
 
     @DeleteMapping("/{reviewId}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable @Min(1) long reviewId) {
+    public void delete(@PathVariable @Positive Long reviewId) {
         reviewService.delete(reviewId);
     }
 
     @PutMapping("/{reviewId}/like/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public void addLike(@PathVariable @Min(1) long reviewId, @PathVariable @Min(1) long userId) {
+    public void addLike(@PathVariable @Positive Long reviewId, @PathVariable @Positive Long userId) {
         reviewService.addLike(reviewId, userId);
     }
 
     @DeleteMapping("/{reviewId}/like/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteLike(@PathVariable @Min(1) long reviewId, @PathVariable @Min(1) long userId) {
+    public void deleteLike(@PathVariable @Positive Long reviewId, @PathVariable @Positive Long userId) {
         reviewService.deleteLike(reviewId, userId);
     }
 
     @PutMapping("/{reviewId}/dislike/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public void addDislike(@PathVariable @Min(1) long reviewId, @PathVariable @Min(1) long userId) {
+    public void addDislike(@PathVariable @Positive Long reviewId, @PathVariable @Positive Long userId) {
         reviewService.addDislike(reviewId, userId);
     }
 
     @DeleteMapping("/{reviewId}/dislike/{userId}")
     @ResponseStatus(HttpStatus.OK)
-    public void deleteDislike(@PathVariable @Min(1) long reviewId, @PathVariable @Min(1) long userId) {
+    public void deleteDislike(@PathVariable @Positive Long reviewId, @PathVariable @Positive Long userId) {
         reviewService.deleteDislike(reviewId, userId);
     }
 
