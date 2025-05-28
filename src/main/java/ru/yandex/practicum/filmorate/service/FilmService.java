@@ -68,12 +68,12 @@ public class FilmService {
 
         log.info("Фильм успешно добавлен, id = {}", film.getId());
 
-        if (newFilm.getGenres() != null && !newFilm.getGenres().isEmpty()) {
+        if (!newFilm.getGenres().isEmpty()) {
             Set<Long> genresIds = newFilm.getGenres().stream().map(GenreDto::getId).collect(Collectors.toSet());
             genreService.addGenresByFilmId(genresIds, film.getId());
         }
 
-        if (newFilm.getDirectors() != null && !newFilm.getDirectors().isEmpty()) {
+        if (!newFilm.getDirectors().isEmpty()) {
             directorService.addDirectorsByFilmId(film);
         }
 
@@ -93,18 +93,16 @@ public class FilmService {
 
         updatedFilm = filmStorage.update(updatedFilm);
 
-        if (newFilm.getGenres() != null) {
-            genreService.deleteGenresByFilmId(updatedFilm.getId());
-
-            if (!newFilm.getGenres().isEmpty()) {
-                Set<Long> genresIds = newFilm.getGenres().stream().map(GenreDto::getId).collect(Collectors.toSet());
-                genreService.addGenresByFilmId(genresIds, updatedFilm.getId());
-            }
+        genreService.deleteGenresByFilmId(updatedFilm.getId());
+        if (!newFilm.getGenres().isEmpty()) {
+            Set<Long> genresIds = newFilm.getGenres().stream().map(GenreDto::getId).collect(Collectors.toSet());
+            genreService.addGenresByFilmId(genresIds, updatedFilm.getId());
         }
+
 
         directorService.removeByFilmId(updatedFilm.getId());
 
-        if (newFilm.getDirectors() != null && !newFilm.getDirectors().isEmpty()) {
+        if (!newFilm.getDirectors().isEmpty()) {
             directorService.addDirectorsByFilmId(updatedFilm);
         }
 
