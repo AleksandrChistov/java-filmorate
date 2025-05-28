@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.service;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.dto.GenreDto;
 import ru.yandex.practicum.filmorate.dal.storage.genre.GenreStorage;
@@ -19,7 +18,7 @@ import java.util.stream.Collectors;
 public class GenreService {
     private final GenreStorage genreStorage;
 
-    public GenreService(@Qualifier("genreDbStorage") GenreStorage genreStorage) {
+    public GenreService(GenreStorage genreStorage) {
         this.genreStorage = genreStorage;
     }
 

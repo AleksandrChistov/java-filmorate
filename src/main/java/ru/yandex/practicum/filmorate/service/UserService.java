@@ -2,7 +2,6 @@ package ru.yandex.practicum.filmorate.service;
 
 import jakarta.validation.constraints.Min;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.dal.dto.NewUserDto;
 import ru.yandex.practicum.filmorate.dal.dto.UserDto;
@@ -24,7 +23,7 @@ public class UserService {
     private final UserStorage userStorage;
     private final EventStorage eventStorage;
 
-    public UserService(@Qualifier("userDbStorage") UserStorage userStorage, EventStorage eventStorage) {
+    public UserService(UserStorage userStorage, EventStorage eventStorage) {
         this.userStorage = userStorage;
         this.eventStorage = eventStorage;
     }
